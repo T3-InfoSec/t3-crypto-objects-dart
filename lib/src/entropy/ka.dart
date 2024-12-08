@@ -1,6 +1,6 @@
 import 'package:convert/convert.dart';
-import 'package:t3_crypto_objects_dart/src/entropy/formosa/formosa.dart';
-import 'package:t3_crypto_objects_dart/src/entropy/node.dart';
+import 'package:t3_crypto_objects/src/entropy/formosa/formosa.dart';
+import 'package:t3_crypto_objects/src/entropy/node.dart';
 
 /// The final node in the tacit derivation process, derived from the PA0 seed.
 ///
