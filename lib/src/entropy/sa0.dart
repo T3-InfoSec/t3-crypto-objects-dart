@@ -11,9 +11,9 @@ class Sa0 extends Critical {
 
   /// Constructs an [Sa0] instance
   ///
-  /// with an initial [value] of [bytesSize]
+  /// with an initial [formosa]
   Sa0(this.formosa)
-      : super(formosa.entropy.value);
+      : super(formosa.value);
 
   @override
   String toString() => 'Sa0(value: ${String.fromCharCodes(value)}';

@@ -10,10 +10,10 @@ class KA extends Node {
   final FormosaEntropy formosa;
   final String hexadecimalValue;
 
-  /// Initializes the [KA] node instance with an entropy [value] and the specified formosa [theme].
+  /// Initializes the [KA] node instance with a [formosa] entropy.
   ///
-  /// Automatically encodes [hexadecimalValue] from [value] during construction.
+  /// Automatically encodes [hexadecimalValue] from formosa entropy [value] during construction.
   KA(this.formosa)
-      : hexadecimalValue = hex.encode(formosa.entropy.value),
-        super(formosa.entropy.value);
+      : hexadecimalValue = hex.encode(formosa.value),
+        super(formosa.value);
 }
