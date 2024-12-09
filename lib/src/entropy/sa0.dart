@@ -1,5 +1,5 @@
 import 'package:t3_crypto_objects/src/encryption/critical.dart';
-import 'package:t3_crypto_objects/src/entropy/formosa/formosa.dart';
+import 'package:t3_crypto_objects/src/entropy/formosa/formosa_entropy.dart';
 
 /// Sa0 represents the initial entropy entered into the derivation protocol.
 ///
