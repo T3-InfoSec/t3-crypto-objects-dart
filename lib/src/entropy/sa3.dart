@@ -1,12 +1,16 @@
 import 'dart:typed_data';
 
-import 'package:t3_crypto_objects/crypto_objects.dart';
+import 'package:t3_crypto_objects/src/argon2/argon2_derivation_service.dart';
+
+import 'byte_entropy.dart';
+import 'sa0.dart';
+import 'sa2.dart';
 
 /// Represents the third derived state [Sa3] in the protocol derivation process.
 /// 
 /// It is derived from a combination of the initial entropy state [Sa0]
 /// and the second derived state [Sa2]
-class Sa3 extends Entropy {
+class Sa3 extends ByteEntropy {
   static final int bytesSize = 128;
 
   /// Constructs an instance of [Sa3] with an initial entropy [value]

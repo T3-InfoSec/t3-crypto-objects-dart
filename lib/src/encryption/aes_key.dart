@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:cryptography/cryptography.dart';
-import 'package:t3_crypto_objects/crypto_objects.dart';
+import 'package:t3_crypto_objects/src/argon2/argon2_derivation_service.dart';
 import 'package:t3_crypto_objects/src/encryption/critical.dart';
 
 abstract class AesKey {

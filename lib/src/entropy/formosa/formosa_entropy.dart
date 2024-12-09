@@ -1,8 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:t3_crypto_objects/crypto_objects.dart';
+import 'package:t3_crypto_objects/src/entropy/byte_entropy.dart';
 
-abstract class FormosaEntropy extends Entropy {
+
+abstract class FormosaEntropy extends ByteEntropy {
   static final leastMultiple = 4;
   dynamic formosaTheme;
 

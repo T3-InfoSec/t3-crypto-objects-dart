@@ -1,9 +1,9 @@
 
 import 'package:cryptography/cryptography.dart';
 
-import '../entropy/entropy.dart';
+import '../entropy/byte_entropy.dart';
 
-class Critical extends Entropy {
+class Critical extends ByteEntropy {
 
   late SecretBox secretBox;
 

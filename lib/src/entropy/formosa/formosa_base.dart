@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:t3_crypto_objects/crypto_objects.dart';
 
+import 'formosa_entropy.dart';
 import 'formosa_theme.dart';
 
 /// A wrap implementation upon bip39 for supporting semantically connected
