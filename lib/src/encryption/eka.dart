@@ -18,17 +18,15 @@ class Eka extends AesKey {
     int digitsChunkSize = 4,
   }) {
     final random = Random.secure();
-    final key = List<int>.generate(keyLength, (_) => random.nextInt(16))
-        .map((value) => value.toRadixString(16))
-        .join();
+    final buffer = StringBuffer();
 
-    // Format the key into [digitsChunkSize]-character blocks.
-    final formattedKey = RegExp('.{1,$digitsChunkSize}')
-        .allMatches(key)
-        .map((match) => match.group(0)!)
-        .join(' ')
-        .trim();
+    for (int i = 0; i < keyLength; i++) {
+      buffer.write(random.nextInt(16).toRadixString(16));
+    }
 
-    return formattedKey;
+    return buffer.toString().toUpperCase().replaceAllMapped(
+      RegExp('.{$digitsChunkSize}'),
+      (match) => "${match.group(0)} ",
+    ).trim();
   }
 }
