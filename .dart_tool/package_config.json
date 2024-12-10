@@ -3,7 +3,7 @@
   "packages": [
     {
       "name": "_fe_analyzer_shared",
-      "rootUri": "file:///home/av3lino/.pub-cache/hosted/pub.dev/_fe_analyzer_shared-73.0.0",
+      "rootUri": "file:///home/av3lino/.pub-cache/hosted/pub.dev/_fe_analyzer_shared-72.0.0",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
@@ -15,7 +15,7 @@
     },
     {
       "name": "analyzer",
-      "rootUri": "file:///home/av3lino/.pub-cache/hosted/pub.dev/analyzer-6.8.0",
+      "rootUri": "file:///home/av3lino/.pub-cache/hosted/pub.dev/analyzer-6.7.0",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
@@ -39,9 +39,9 @@
     },
     {
       "name": "collection",
-      "rootUri": "file:///home/av3lino/.pub-cache/hosted/pub.dev/collection-1.19.1",
+      "rootUri": "file:///home/av3lino/.pub-cache/hosted/pub.dev/collection-1.18.0",
       "packageUri": "lib/",
-      "languageVersion": "3.4"
+      "languageVersion": "2.18"
     },
     {
       "name": "convert",
@@ -111,9 +111,9 @@
     },
     {
       "name": "http_parser",
-      "rootUri": "file:///home/av3lino/.pub-cache/hosted/pub.dev/http_parser-4.1.1",
+      "rootUri": "file:///home/av3lino/.pub-cache/hosted/pub.dev/http_parser-4.0.2",
       "packageUri": "lib/",
-      "languageVersion": "3.4"
+      "languageVersion": "2.12"
     },
     {
       "name": "io",
@@ -195,9 +195,9 @@
     },
     {
       "name": "shelf",
-      "rootUri": "file:///home/av3lino/.pub-cache/hosted/pub.dev/shelf-1.4.2",
+      "rootUri": "file:///home/av3lino/.pub-cache/hosted/pub.dev/shelf-1.4.1",
       "packageUri": "lib/",
-      "languageVersion": "3.4"
+      "languageVersion": "2.17"
     },
     {
       "name": "shelf_packages_handler",
@@ -332,7 +332,7 @@
       "languageVersion": "3.5"
     }
   ],
-  "generated": "2024-12-10T01:24:21.433486Z",
+  "generated": "2024-12-10T09:06:18.672327Z",
   "generator": "pub",
   "generatorVersion": "3.5.4",
   "flutterRoot": "file:///home/av3lino/snap/flutter",
