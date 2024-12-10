@@ -49,7 +49,7 @@ class EntropyBits {
   }
 
    /// Converts a bits string to bytes.
-  static Uint8List bitsToUint8List(String bits) {
+  static Uint8List stringBitsToBytes(String bits) {
     int byteLength = bits.length ~/ 8;
     Uint8List result = Uint8List(byteLength);
 
@@ -59,6 +59,19 @@ class EntropyBits {
     }
 
     return result;
+  }
+
+  static Uint8List boolBitsToBytes(List<bool> bits) {
+    final length = (bits.length + 7) ~/ 8;
+    final byteArray = Uint8List(length);
+
+    for (int i = 0; i < bits.length; i++) {
+      if (bits[i]) {
+        byteArray[i ~/ 8] |= (1 << (7 - i % 8));
+      }
+    }
+
+    return byteArray;
   }
 
   /// Converts [bytes] to a list of bits.

@@ -14,7 +14,6 @@ export 'src/entropy/sa1.dart';
 export 'src/entropy/sa2.dart';
 export 'src/entropy/sa3.dart';
 // formosa
-export 'src/entropy/formosa/formosa_entropy.dart';
 export 'src/entropy/formosa/formosa_base.dart';
 export 'src/entropy/formosa/formosa_theme.dart';
 // argon2

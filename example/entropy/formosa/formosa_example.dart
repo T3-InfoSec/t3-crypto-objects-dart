@@ -10,10 +10,9 @@ void main() {
   print(formosa.value);
 
   String mnemonic = formosa.getMnemonic();
-
   print(mnemonic);
 
   Formosa formosaFromMnemonic = Formosa.fromMnemonic(mnemonic);
   print(formosaFromMnemonic.value);
-
+  print("Is valid formosa: ${formosaFromMnemonic.isValid()}");
 }
