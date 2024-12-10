@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:t3_crypto_objects/src/argon2/argon2_derivation_service.dart';
 
-import 'byte_entropy.dart';
+import 'entropy_bytes.dart';
 import 'sa0.dart';
 import 'sa2.dart';
 
@@ -10,7 +10,7 @@ import 'sa2.dart';
 /// 
 /// It is derived from a combination of the initial entropy state [Sa0]
 /// and the second derived state [Sa2]
-class Sa3 extends ByteEntropy {
+class Sa3 extends EntropyBytes {
   static final int bytesSize = 128;
 
   /// Constructs an instance of [Sa3] with an initial entropy [value]

@@ -1,13 +1,19 @@
-import 'package:t3_crypto_objects/crypto_objects.dart';
+
+import 'package:t3_crypto_objects/src/entropy/entropy_bytes.dart';
 import 'package:t3_crypto_objects/src/entropy/formosa/formosa_base.dart';
 import 'package:t3_crypto_objects/src/entropy/formosa/formosa_theme.dart';
 
 void main() {
-  ByteEntropy randomEntropy = ByteEntropy.fromRandom(wordsNumber: 12);
+  EntropyBytes randomEntropy = EntropyBytes.fromRandom(wordsNumber: 12);
 
   Formosa formosa = Formosa(randomEntropy.value, FormosaTheme.bip39);
+  print(formosa.value);
 
-  String formosaMnemonic = formosa.getMnemonic();
+  String mnemonic = formosa.getMnemonic();
 
-  print(formosaMnemonic);
+  print(mnemonic);
+
+  Formosa formosaFromMnemonic = Formosa.fromMnemonic(mnemonic);
+  print(formosaFromMnemonic.value);
+
 }

@@ -6,7 +6,7 @@ library;
 // encryption
 export 'src/encryption/eka.dart';
 // entropy
-export 'src/entropy/byte_entropy.dart';
+export 'src/entropy/entropy_bytes.dart';
 export 'src/entropy/ka.dart';
 export 'src/entropy/node.dart';
 export 'src/entropy/sa0.dart';

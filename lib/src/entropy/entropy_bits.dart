@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 
-class BitEntropy {
+class EntropyBits {
   List<bool> bits;
 
-  /// Constructs a [BitEntropy] from a list of booleans representing bits.
+  /// Constructs a [EntropyBits] from a list of booleans representing bits.
   /// Each boolean in [bits] is `true` for 1 and `false` for 0.
-  BitEntropy(this.bits);
+  EntropyBits(this.bits);
 
   /// Converts the bit sequence into a binary string representation.
   @override
@@ -14,7 +14,7 @@ class BitEntropy {
   /// Calculates the length of the bit sequence.
   int get length => bits.length;
 
-  /// Converts [BitEntropy]] to a byte array.
+  /// Converts [EntropyBits]] to a byte array.
   Uint8List toBytes() {
     if (bits.length % 8 != 0) {
       throw ArgumentError("The length of the bit sequence must be a multiple of 8 to convert to bytes.");
@@ -42,5 +42,28 @@ class BitEntropy {
       }
     }
     return byte;
+  }
+
+   /// Converts a bits string to bytes.
+  static Uint8List bitsToUint8List(String bits) {
+    int byteLength = bits.length ~/ 8;
+    Uint8List result = Uint8List(byteLength);
+
+    for (int i = 0; i < byteLength; i++) {
+      int byteValue = int.parse(bits.substring(i * 8, (i + 1) * 8), radix: 2);
+      result[i] = byteValue;
+    }
+
+    return result;
+  }
+
+  /// Converts [bytes] to a list of bits.
+  static List<bool> bytesToBits(Uint8List bytes) {
+    return bytes.expand((byte) => byteToBits(byte)).toList();
+  }
+
+  /// Converts a single byte to a list of 8 bits..
+  static List<bool> byteToBits(int byte) {
+    return List.generate(8, (i) => (byte & (1 << (7 - i))) != 0);
   }
 }

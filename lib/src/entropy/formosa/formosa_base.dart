@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
+import 'package:t3_crypto_objects/src/entropy/checksum_bits.dart';
+import 'package:t3_crypto_objects/src/entropy/entropy_bits.dart';
 
 import 'formosa_entropy.dart';
 import 'formosa_theme.dart';
@@ -8,7 +9,6 @@ import 'formosa_theme.dart';
 /// A wrap implementation upon bip39 for supporting semantically connected
 /// words implementation upon multiple supported themes.
 class Formosa extends FormosaEntropy {
-
   Formosa(super.value, FormosaTheme super.formosaTheme);
 
   /// Creates an instance of Formosa using the given [formosaTheme] and initial [mnemonic].
@@ -17,13 +17,17 @@ class Formosa extends FormosaEntropy {
   /// and the words defined by the specified FormosaTheme.
   @override
   factory Formosa.fromMnemonic(
-      String mnemonic, {
-      FormosaTheme formosaTheme = FormosaTheme.bip39,
-    }) {
+    String mnemonic, {
+    FormosaTheme formosaTheme = FormosaTheme.bip39,
+  }) {
     Uint8List entropy = _toEntropy(mnemonic, formosaTheme);
-    return Formosa(entropy, formosaTheme);
+    final formosa = Formosa(entropy, formosaTheme);
+    if (!formosa.validate()) {
+      throw ArgumentError('The derived entropy does not match the checksum.');
+    }
+    return formosa;
   }
-  
+
   @override
   String getMnemonic() {
     return _toMnemonic(value);
@@ -35,69 +39,65 @@ class Formosa extends FormosaEntropy {
   /// using the logic defined in the associated FormosaTheme. The mnemonic
   /// reflects the checksum-integrated mnemonic representation of the entropy.
   String _toMnemonic(Uint8List value) {
-    var hashObject = sha256.convert(value);
-
     String entropyBits = value
         .map((e) => e.toRadixString(2).padLeft(8, '0'))
         .join();
 
-    String checksumBits = hashObject.bytes
-        .map((e) => e.toRadixString(2).padLeft(8, '0'))
-        .join()
-        .substring(0, value.length * 8 ~/ 32);
+    String checksumBitsString = checksumBits.bits.map((bit) => bit ? '1' : '0').join();
 
-    String dataBits = entropyBits + checksumBits;
+    String dataBits = entropyBits + checksumBitsString;
 
     List sentences = formosaTheme.data.getSentencesFromBits(dataBits);
     return sentences.join(' ');
   }
 
-  /// Returns the entropy [value] from a given [mnemonic] and [formosaTheme]
+  /// Returns the entropy [value] from a given [mnemonic] and [formosaTheme].
+  /// This method now also validates the checksum before proceeding with entropy conversion.
   static Uint8List _toEntropy(String mnemonic, FormosaTheme formosaTheme) {
     List<String> words = mnemonic.split(' ');
-
-    int wordsSize = words.length;
     var wordsDict = formosaTheme.data;
-    
-    // Check if the number of words is a multiple of phraseSize
+
     int phraseSize = wordsDict.wordsPerPhrase();
-    if (wordsSize % phraseSize != 0) {
-      return Uint8List(0); 
+
+    // Check if the number of words is a multiple of the expected size per phrase
+    if (words.length % phraseSize != 0) {
+      throw ArgumentError('The number of words is not a multiple of the expected size per sentence.');
     }
 
-    // Calculation of the total length in bits
-    int numberPhrases = wordsSize ~/ phraseSize;
-    int concatenationLenBits = numberPhrases * wordsDict.bitsPerPhrase();
-    int checksumLengthBits = concatenationLenBits ~/ 33;  
+    // Calculate the length of the concatenated bits, and determine the checksum and entropy lengths
+    int concatenationLenBits = words.length * wordsDict.bitsPerPhrase();
+    int checksumLengthBits = concatenationLenBits ~/ 33;
     int entropyLengthBits = concatenationLenBits - checksumLengthBits;
 
-    // Get the word indexes
+    // Get the phrase indexes based on the word list
     List<int> phraseIndexes = wordsDict.getPhraseIndexes(words);
 
-    // Construct the concatenation bit sequence
-    String concatenationBits = phraseIndexes.map((index) {
-      return index.toRadixString(2).padLeft(11, '0'); 
-    }).join();
+    // Convert phrase indexes to a concatenated bit string
+    String concatenationBits = phraseIndexes
+        .map((index) => index.toRadixString(2).padLeft(11, '0'))
+        .join();
 
-    // Create Uint8List to store the result
-    int byteLength = entropyLengthBits ~/ 8;
-    Uint8List entropy = Uint8List(byteLength);
+    // Extract the entropy bits from the concatenation (excluding the checksum bits)
+    String entropyBits = concatenationBits.substring(0, entropyLengthBits);
 
-    // Fill the Uint8List with the corresponding bits
-    for (int i = 0; i < byteLength; i++) {
-      int byteStartIndex = i * 8;
-      int byteValue = 0;
+    // Convert the bits to a Uint8List (entropy)
+    Uint8List entropy = EntropyBits.bitsToUint8List(entropyBits);
 
-      // Extract the 8 bits corresponding to this byte
-      for (int j = 0; j < 8; j++) {
-        if (concatenationBits[byteStartIndex + j] == '1') {
-          byteValue |= (1 << (7 - j));
-        }
-      }
+    // Now we need to validate the checksum
+    // Create the ChecksumBits from the corresponding bits of the concatenation
+    List<bool> checksumBits = concatenationBits
+        .substring(entropyLengthBits)  // Get the checksum part
+        .split('')
+        .map((bit) => bit == '1')
+        .toList();
 
-      entropy[i] = byteValue;
+    ChecksumBits checksum = ChecksumBits(checksumBits);
+
+    // Validate the checksum against the entropy
+    if (!checksum.isValid(entropy)) {
+      throw ArgumentError('The checksum is invalid for the given mnemonic.');
     }
 
-    return entropy;
+    return entropy;  // Return the valid entropy if checksum is valid
   }
 }
