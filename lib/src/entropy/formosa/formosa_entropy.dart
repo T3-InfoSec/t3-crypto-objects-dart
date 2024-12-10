@@ -6,6 +6,10 @@ import 'package:t3_crypto_objects/src/entropy/checksum_bits.dart';
 import 'package:t3_crypto_objects/src/entropy/entropy_bits.dart';
 import 'package:t3_crypto_objects/src/entropy/entropy_bytes.dart';
 
+/// Abstract class representing entropy for Formosa.
+///
+/// This class models entropy with a checksum and provides functionality
+/// for validating and deriving mnemonics based on themes defined by the Formosa protocol.
 abstract class FormosaEntropy extends EntropyBytes {
   static final leastMultiple = 4;
   dynamic formosaTheme;
@@ -38,7 +42,7 @@ abstract class FormosaEntropy extends EntropyBytes {
     final hashObject = sha256.convert(value);
 
     int checksumLengthBits = (value.length * 8) ~/ 32;
-    
+
     final checksumBitsList = hashObject.bytes
         .expand((byte) => EntropyBits.byteToBits(byte))
         .take(checksumLengthBits)

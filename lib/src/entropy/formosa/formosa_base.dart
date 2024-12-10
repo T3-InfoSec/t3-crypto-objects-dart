@@ -98,6 +98,6 @@ class Formosa extends FormosaEntropy {
       throw ArgumentError('The checksum is invalid for the given mnemonic.');
     }
 
-    return entropy;  // Return the valid entropy if checksum is valid
+    return entropy;
   }
 }

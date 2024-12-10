@@ -1,5 +1,9 @@
 import 'dart:typed_data';
 
+/// Represents a sequence of bits used for modeling entropy.
+///
+/// This class provides methods to manipulate entropy as a list of [bits]
+/// and convert it to/from byte arrays or binary string representations.
 class EntropyBits {
   List<bool> bits;
 

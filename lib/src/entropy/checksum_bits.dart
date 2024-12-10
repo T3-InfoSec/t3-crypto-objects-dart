@@ -4,7 +4,12 @@ import 'package:crypto/crypto.dart';
 
 import 'entropy_bits.dart';
 
+/// Represents checksum bits used for entropy validation.
+///
+/// A checksum ensures data integrity by verifying that the entropy value
+/// matches the expected checksum derived from a cryptographic hash function.
 class ChecksumBits extends EntropyBits {
+  
   /// Constructor to initialise the checksum bits.
   /// Ensures that it contains only 4 bits.
   ChecksumBits(super.bits);
