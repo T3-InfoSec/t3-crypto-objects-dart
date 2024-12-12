@@ -14,5 +14,4 @@ void main() {
 
   Formosa formosaFromMnemonic = Formosa.fromMnemonic(mnemonic);
   print(formosaFromMnemonic.value);
-  print("Is valid formosa: ${formosaFromMnemonic.isValid()}");
 }
