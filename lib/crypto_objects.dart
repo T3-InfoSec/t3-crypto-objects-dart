@@ -16,5 +16,6 @@ export 'src/entropy/sa3.dart';
 // formosa
 export 'src/entropy/formosa/formosa_base.dart';
 export 'src/entropy/formosa/formosa_theme.dart';
+export 'src/entropy/formosa/unsafe_formosa_candidate.dart';
 // argon2
 export 'src/argon2/argon2_derivation_service.dart';
