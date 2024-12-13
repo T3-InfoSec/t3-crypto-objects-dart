@@ -1,20 +1,19 @@
 import 'dart:typed_data';
 
+import 'package:cryptography/cryptography.dart';
 import 'package:t3_crypto_objects/crypto_objects.dart';
-import 'package:t3_crypto_objects/src/encryption/critical.dart';
+import 'package:t3_crypto_objects/src/encryption/plaintext.dart';
 
 void main() async {
   final eka = Eka();
 
-  final dataToEncrypt = Critical(Uint8List.fromList([1, 2, 3, 4, 5]));
+  final plaintext = Plaintext(Uint8List.fromList([1, 2, 3, 4, 5]));
+  print("Plaintext: ${plaintext.value}");
 
-  print("Plain text: ${dataToEncrypt.value}");
+  SecretBox secretBox = await eka.encrypt(plaintext);
 
-  await eka.encrypt(dataToEncrypt);
+  print("Ciphertext: ${secretBox.cipherText}");
 
-  final cipherText = dataToEncrypt.secretBox.concatenation();
-  print("Cipher text (SecretBox): $cipherText");
-
-  final decryptedData = await eka.decrypt(cipherText);
+  final decryptedData = await eka.decrypt(secretBox.cipherText);
   print("Plain text: ${decryptedData.value}");
 }

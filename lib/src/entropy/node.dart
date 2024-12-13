@@ -1,15 +1,15 @@
 import 'dart:typed_data';
 
-import 'package:t3_crypto_objects/src/encryption/critical.dart';
+import 'package:t3_crypto_objects/src/encryption/plaintext.dart';
 
 
 /// Represents a node in the derivation process of the protocol,
 /// encapsulating critical value entropy and protocol metadata.
 /// 
-/// A [Node] extends [Critical], providing both the raw entropy [value]
+/// A [Node] extends [Plaintext], providing both the raw entropy [value]
 /// and metadata such as [depth] and [arity] that describe its position
 /// and configuration within the derivation hierarchy.
-class Node extends Critical {
+class Node extends Plaintext {
   final int? depth;
   final int? arity;
   

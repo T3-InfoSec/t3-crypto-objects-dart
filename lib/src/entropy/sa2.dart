@@ -25,7 +25,7 @@ class Sa2 extends EntropyBytes {
   /// a derivation process [iterations] times.
   void from(int iterations, Sa1 sa1) {
     print('Deriving SA2 form SA1');
-    value = Argon2DerivationService().deriveWithHighMemory(iterations, sa1.value);
+    value = Argon2DerivationService().deriveWithHighMemory(iterations, sa1);
   }
 
   @override
