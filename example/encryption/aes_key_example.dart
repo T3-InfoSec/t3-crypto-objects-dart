@@ -14,6 +14,6 @@ void main() async {
 
   print("Ciphertext: ${secretBox.cipherText}");
 
-  final decryptedData = await eka.decrypt(secretBox.cipherText);
+  final decryptedData = await eka.decrypt(secretBox.concatenation());
   print("Plain text: ${decryptedData.value}");
 }

@@ -39,8 +39,8 @@ abstract class AesKey {
   Future<Plaintext> decrypt(List<int> ciphertextPayload) async {
     _secretKey ??= await Argon2DerivationService().deriveKey(key);
     SecretBox secretBox = SecretBox.fromConcatenation(ciphertextPayload,
-        nonceLength: algorithm.nonceLength,
-        macLength: algorithm.secretKeyLength);
+        nonceLength: AesGcm.defaultNonceLength, // 12 Bytes
+        macLength: algorithm.macAlgorithm.macLength); // 16 Bytes
 
     final decryptedBytes = await algorithm.decrypt(
       secretBox,
