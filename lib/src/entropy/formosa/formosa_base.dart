@@ -79,19 +79,21 @@ class Formosa extends EntropyBytes {
   }
 
   factory Formosa.fromRandomWords({
-    int wordsNumber = 12,
+    int wordCount = 12,
     FormosaTheme formosaTheme = FormosaTheme.bip39,
   }) {
     const int byteMaxValue = 256;
-    if (!FormosaService.isValidWordCount(wordsNumber, formosaTheme.data.wordsPerPhrase())) {
+    if (!FormosaService.isValidWordCount(wordCount, formosaTheme.data.wordsPerPhrase())) {
       throw ArgumentError(
           'The number of words is not a multiple of the expected size for a given sentence.');
     }
-    int phrasesNumber = wordsNumber ~/ formosaTheme.data.wordsPerPhrase();
-    int totalBits = phrasesNumber * formosaTheme.data.bitsPerPhrase(); 
-    int totalBytes = totalBits ~/ 8;
+    int phrasesCount = wordCount ~/ formosaTheme.data.wordsPerPhrase();
+    int totalBitCount = phrasesCount * formosaTheme.data.bitsPerPhrase();
+    if (totalBitCount % 33 != 0) {throw ArgumentError('The bits count is not multiple of 33');} // this should never happend
+    int entropyBitCount = totalBitCount ~/ 33 * 32;
+    int entropyByteCount = entropyBitCount ~/ 8;
 
-    Uint8List value = Uint8List(totalBytes);
+    Uint8List value = Uint8List(entropyByteCount);
     Random random = Random.secure();
     for (int i = 0; i < value.length; i++) {
       value[i] = random.nextInt(byteMaxValue);
