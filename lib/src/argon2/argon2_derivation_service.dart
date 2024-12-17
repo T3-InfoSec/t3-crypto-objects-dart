@@ -44,6 +44,7 @@ class Argon2DerivationService {
         derivedHash = highMemoryArgon2.convert(derivedHash).bytes;
       }
     }
+
     return EntropyBytes(derivedHash);
   }
 

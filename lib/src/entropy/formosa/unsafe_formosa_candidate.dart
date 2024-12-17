@@ -5,17 +5,18 @@ import 'package:t3_crypto_objects/src/entropy/checksum_bits.dart';
 import 'package:t3_crypto_objects/src/entropy/formosa/concatenated_bits.dart';
 import 'package:t3_crypto_objects/src/entropy/formosa/formosa_service.dart';
 
-class UnsafeFormosaCandidate extends Formosa {
+class UnsafeFormosaCandidate {
   bool isValidFormosa = true;
+  Formosa? _formosa;
 
   UnsafeFormosaCandidate(Uint8List value, dynamic formosaTheme,
-      {ChecksumBits? checksumBits})
-      : super(value, formosaTheme, checksumBits: checksumBits) {
+      {ChecksumBits? checksumBits}) {
     try {
+      _formosa = Formosa(value, formosaTheme, checksumBits: checksumBits);
       if (!FormosaService.isValidEntropyLength(value)) {
         isValidFormosa = false;
       }
-      if (!FormosaService.isValidEntropyChecksum(value, this.checksumBits)) {
+      if (!FormosaService.isValidEntropyChecksum(value, _formosa!.checksumBits)) {
         isValidFormosa = false;
       }
     } catch (_) {
@@ -58,11 +59,11 @@ class UnsafeFormosaCandidate extends Formosa {
     return UnsafeFormosaCandidate(formosa.value, formosa.formosaTheme);
   }
 
-  /// Convert to a valid [Formosa] instance if [isValidFormosa] is true.
   Formosa? toFormosa() {
     if (isValidFormosa) {
-      return Formosa(value, formosaTheme, checksumBits: checksumBits);
+      return _formosa;
     }
     return null;
   }
 }
+
