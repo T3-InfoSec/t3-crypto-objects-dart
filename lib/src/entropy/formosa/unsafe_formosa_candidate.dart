@@ -29,7 +29,7 @@ class UnsafeFormosaCandidate extends Formosa {
       List<String> words = mnemonic.split(' ');
       int phraseSize = formosaTheme.data.wordsPerPhrase();
 
-      if (!FormosaService.isValidWordCount(words, phraseSize) ||
+      if (!FormosaService.isValidWordCount(words.length, phraseSize) ||
           !FormosaService.wordsExistInTheme(words, formosaTheme)) {
         return UnsafeFormosaCandidate(Uint8List(0), formosaTheme)
           ..isValidFormosa = false;

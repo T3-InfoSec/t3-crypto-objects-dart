@@ -30,7 +30,7 @@ class FormosaService {
   }
 
   /// Validate word count against phrase size.
-  static bool isValidWordCount(List<String> words, int phraseSize) {
-    return words.length % phraseSize == 0;
+  static bool isValidWordCount(int wordsLength, int phraseSize) {
+    return wordsLength % phraseSize == 0;
   }
 }

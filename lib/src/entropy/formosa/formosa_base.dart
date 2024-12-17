@@ -66,7 +66,7 @@ class Formosa extends EntropyBytes {
       throw ArgumentError(
           'Some word of the nemonic phrase is not contained in the given theme.');
     }
-    if (!FormosaService.isValidWordCount(words, phraseSize)) {
+    if (!FormosaService.isValidWordCount(words.length, phraseSize)) {
       throw ArgumentError(
           'The number of words is not a multiple of the expected size for a given sentence.');
     }
@@ -83,9 +83,12 @@ class Formosa extends EntropyBytes {
     FormosaTheme formosaTheme = FormosaTheme.bip39,
   }) {
     const int byteMaxValue = 256;
-    double bitsPerWord = formosaTheme.data.bitsPerPhrase() / formosaTheme.data.wordsPerPhrase(); 
-
-    double totalBits = wordsNumber * bitsPerWord;
+    if (!FormosaService.isValidWordCount(wordsNumber, formosaTheme.data.wordsPerPhrase())) {
+      throw ArgumentError(
+          'The number of words is not a multiple of the expected size for a given sentence.');
+    }
+    int phrasesNumber = wordsNumber ~/ formosaTheme.data.wordsPerPhrase();
+    int totalBits = phrasesNumber * formosaTheme.data.bitsPerPhrase(); 
     int totalBytes = totalBits ~/ 8;
 
     Uint8List value = Uint8List(totalBytes);

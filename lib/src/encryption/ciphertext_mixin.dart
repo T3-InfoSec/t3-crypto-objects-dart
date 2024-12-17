@@ -1,6 +1,6 @@
 import 'package:cryptography/cryptography.dart';
 
-// Mixin renaming cipherText to cipherTextPayload
+// Mixin renaming ciphertext to ciphertextPayload
 mixin CiphertextMixin on SecretBox {
   List<int> get ciphertextPayload => cipherText;
 }
