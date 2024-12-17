@@ -33,15 +33,4 @@ class FormosaService {
   static bool isValidWordCount(List<String> words, int phraseSize) {
     return words.length % phraseSize == 0;
   }
-
-  /// Generate checksum bits from entropy.
-  static ChecksumBits generateChecksumBits(Uint8List value) {
-    final hash = sha256.convert(value);
-    final checksumLengthBits = (value.length * 8) ~/ 32;
-    final checksumBits = hash.bytes
-        .expand((byte) => EntropyBits.byteToBits(byte))
-        .take(checksumLengthBits)
-        .toList();
-    return ChecksumBits(checksumBits);
-  }
 }

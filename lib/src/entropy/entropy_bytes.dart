@@ -15,19 +15,6 @@ class EntropyBytes  extends EntropyBits {
   EntropyBytes(Uint8List value)
       : super(EntropyBits.bytesToBits(value));
 
-  factory EntropyBytes.fromRandom({int wordsNumber = 12}) {
-    const int byteMaxValue = 256;
-    const double bytesPerWord = 1.33;    
-    final int entropyBytesForSeed = (wordsNumber * bytesPerWord).ceil();
-
-    Uint8List value = Uint8List(entropyBytesForSeed);
-    Random random = Random.secure();
-    for (int i = 0; i < value.length; i++) {
-      value[i] = random.nextInt(byteMaxValue);
-    }
-    return EntropyBytes(value);
-  }
-
   /// Accesses the internal bytes of the entropy.
   Uint8List get value => toBytes();
 

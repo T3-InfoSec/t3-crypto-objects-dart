@@ -12,11 +12,11 @@ void main() async {
 
   print("Deriving with high memory...");
   final highMemoryHash = derivationService.deriveWithHighMemory(2, entropyBytes);
-  print("Derived hash: ${base64Encode(highMemoryHash)}");
+  print("Derived hash: ${base64Encode(highMemoryHash.value)}");
 
   print("Deriving with moderate memory...");
   final moderateMemoryHash = derivationService.deriveWithModerateMemory(entropyBytes);
-  print("Derived hash: ${base64Encode(moderateMemoryHash)}");
+  print("Derived hash: ${base64Encode(moderateMemoryHash.value)}");
 
   print("Deriving key AES...");
   final derivedKey = await derivationService.deriveKey("my_secure_key");

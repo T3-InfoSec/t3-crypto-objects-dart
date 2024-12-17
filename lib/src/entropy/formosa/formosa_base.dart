@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:t3_crypto_objects/src/entropy/checksum_bits.dart';
@@ -24,7 +25,7 @@ class Formosa extends EntropyBytes {
 
   Formosa(super.value, this.formosaTheme, {ChecksumBits? checksumBits})
       : checksumBits =
-            checksumBits ?? FormosaService.generateChecksumBits(value) {
+            checksumBits ?? ChecksumBits.fromEntropyHash(value) {
     if (!FormosaService.isValidEntropyLength(value)) {
       throw ArgumentError(
           'Formosa entropy length must be a multiple of ${FormosaService.leastMultiple}');
@@ -75,6 +76,25 @@ class Formosa extends EntropyBytes {
       throw ArgumentError('Checksumbits don\'t match');
     }
     return formosa;
+  }
+
+  factory Formosa.fromRandomWords({
+    int wordsNumber = 12,
+    FormosaTheme formosaTheme = FormosaTheme.bip39,
+  }) {
+    const int byteMaxValue = 256;
+    double bitsPerWord = formosaTheme.data.bitsPerPhrase() / formosaTheme.data.wordsPerPhrase(); 
+
+    double totalBits = wordsNumber * bitsPerWord;
+    int totalBytes = totalBits ~/ 8;
+
+    Uint8List value = Uint8List(totalBytes);
+    Random random = Random.secure();
+    for (int i = 0; i < value.length; i++) {
+      value[i] = random.nextInt(byteMaxValue);
+    }
+    
+    return Formosa(value, formosaTheme);
   }
 
   /// Returns the mnemonic phrase corresponding to the current entropy value.

@@ -36,7 +36,7 @@ class Argon2DerivationService {
   /// To achieve a presumably high execution time, this method should be called 
   /// multiple times. It is designed for scenarios where stronger computational 
   /// resistance is required by increasing the cumulative processing time.
-  Uint8List deriveWithHighMemory(int iterations, EntropyBytes entropyBytes) {
+  EntropyBytes deriveWithHighMemory(int iterations, EntropyBytes entropyBytes) {
     Uint8List derivedHash = entropyBytes.value;
     if (iterations > 0) {
       for (int step = 0; step < iterations; step++) {
@@ -44,7 +44,7 @@ class Argon2DerivationService {
         derivedHash = highMemoryArgon2.convert(derivedHash).bytes;
       }
     }
-    return derivedHash;
+    return EntropyBytes(derivedHash);
   }
 
   /// Derives a cryptographic hash using Argon2 with moderate memory usage given an [inputHash].
@@ -52,8 +52,8 @@ class Argon2DerivationService {
   /// This derivation is designed to require presumably little time, depending 
   /// on the specifications of the device running the process. It is suitable 
   /// for scenarios where a quick derivation process is desirable.
-  Uint8List deriveWithModerateMemory(EntropyBytes entropyBytes) {
-    return moderateMemoryArgon2.convert(entropyBytes.value).bytes;
+  EntropyBytes deriveWithModerateMemory(EntropyBytes entropyBytes) {
+    return EntropyBytes(moderateMemoryArgon2.convert(entropyBytes.value).bytes);
   }
 
   /// Derives a 256-bit AES encryption key from the provided [key] string using the Argon2id algorithm.
