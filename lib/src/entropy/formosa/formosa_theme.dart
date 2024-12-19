@@ -1,3 +1,6 @@
+import 'package:t3_crypto_objects/src/entropy/formosa/themes/formosa_global.dart';
+import 'package:t3_crypto_objects/src/entropy/formosa/themes/medieval_fantasy_light.dart';
+
 import 'themes/themes.dart';
 import 'theme_base.dart';
 
@@ -34,6 +37,14 @@ enum FormosaTheme {
     name: 'sci_fi',
     data: ThemeBase(themeData: sciFiData),
   ),
+  medievalFantasyLight(
+    name: 'medievalFantasyLight',
+    data: ThemeBase(themeData: medievalFantasyLightData),
+  ),
+  formosaGLobal(
+    name: 'formosaGLobal',
+    data: ThemeBase(themeData: formosaGLobalData),
+  ),  
   tourism(
     name: 'tourism',
     data: ThemeBase(themeData: tourismData),
