@@ -1,5 +1,5 @@
 
-import 'package:t3_crypto_objects/src/entropy/formosa/formosa_base.dart';
+import 'package:t3_crypto_objects/src/entropy/formosa/formosa.dart';
 import 'package:t3_crypto_objects/src/entropy/formosa/formosa_theme.dart';
 
 void main() {

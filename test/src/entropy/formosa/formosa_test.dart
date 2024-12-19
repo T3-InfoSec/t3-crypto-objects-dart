@@ -1,8 +1,7 @@
 import 'dart:typed_data';
 import 'package:t3_crypto_objects/src/entropy/checksum_bits.dart';
-import 'package:t3_crypto_objects/src/entropy/entropy_bytes.dart';
 import 'package:t3_crypto_objects/src/entropy/formosa/concatenated_bits.dart';
-import 'package:t3_crypto_objects/src/entropy/formosa/formosa_base.dart';
+import 'package:t3_crypto_objects/src/entropy/formosa/formosa.dart';
 import 'package:test/test.dart';
 import 'package:t3_crypto_objects/src/entropy/formosa/formosa_theme.dart';
 

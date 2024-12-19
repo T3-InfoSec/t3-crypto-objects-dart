@@ -1,4 +1,4 @@
-import 'package:t3_crypto_objects/src/entropy/formosa/formosa_base.dart';
+import 'package:t3_crypto_objects/src/entropy/formosa/formosa.dart';
 import 'package:test/test.dart';
 import 'dart:typed_data';
 import 'package:t3_crypto_objects/src/entropy/sa0.dart';

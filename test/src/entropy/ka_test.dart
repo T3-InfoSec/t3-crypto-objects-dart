@@ -1,7 +1,7 @@
 import 'package:t3_crypto_objects/src/entropy/ka.dart';
 import 'package:test/test.dart';
 import 'package:convert/convert.dart';
-import 'package:t3_crypto_objects/src/entropy/formosa/formosa_base.dart';
+import 'package:t3_crypto_objects/src/entropy/formosa/formosa.dart';
 
 void main() {
   group('KA', () {
