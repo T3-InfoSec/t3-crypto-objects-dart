@@ -29,7 +29,7 @@ void main() {
     test('should generate valid mnemonic based on entropy', () {
       final entropy = Uint8List(16); // 128 bits of entropy
       final formosa = Formosa(entropy, theme);
-      final mnemonic = formosa.getMnemonic();
+      final mnemonic = formosa.mnemonic;
 
       expect(mnemonic, isA<String>(),
           reason: 'Formosa should generate a valid mnemonic string.');
@@ -40,7 +40,7 @@ void main() {
     test('should validate mnemonic reconstruction', () {
       final entropy = Uint8List(16);
       final formosa = Formosa(entropy, theme);
-      final mnemonic = formosa.getMnemonic();
+      final mnemonic = formosa.mnemonic;
 
       final reconstructed = Formosa.fromMnemonic(mnemonic, formosaTheme: theme);
       expect(reconstructed.value, equals(formosa.value),

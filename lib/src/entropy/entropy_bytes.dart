@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:t3_crypto_objects/src/entropy/entropy_bits.dart';
@@ -9,6 +10,7 @@ import 'package:t3_crypto_objects/src/entropy/entropy_bits.dart';
 /// raw data used in cryptographic derivations, secret generation, or other
 /// processes where controlled randomness or uncertainty is needed.
 class EntropyBytes  extends EntropyBits {
+  static const int byteMaxValue = 256;
 
   /// Constructs a [EntropyBytes] from a [Uint8List].
   EntropyBytes(Uint8List value)
@@ -20,5 +22,14 @@ class EntropyBytes  extends EntropyBits {
   /// Setter for the internal bytes of the entropy.
   set value(Uint8List newValue) {
     bits = EntropyBits.bytesToBits(newValue);
+  }
+
+  factory EntropyBytes.fromRandom(int entropyByteLength) {
+    Uint8List value = Uint8List(entropyByteLength);
+    Random random = Random.secure();
+    for (int i = 0; i < value.length; i++) {
+      value[i] = random.nextInt(byteMaxValue);
+    }
+    return EntropyBytes(value);
   }
 }
