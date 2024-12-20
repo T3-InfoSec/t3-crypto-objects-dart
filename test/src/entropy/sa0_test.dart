@@ -11,11 +11,7 @@ void main() {
       expect(sa0.formosa, equals(formosa));
       expect(sa0.value, equals(formosa.value));
     });
-
-    test('Sa0 has the correct bytesSize', () {
-      expect(Sa0.bytesSize, equals(128));
-    });
-
+    
     test('Sa0.toString returns correct format', () {
       final formosa = Formosa.fromRandomWords();
       final sa0 = Sa0(formosa);

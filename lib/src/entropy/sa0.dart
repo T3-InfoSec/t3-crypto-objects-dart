@@ -5,8 +5,6 @@ import 'package:t3_crypto_objects/src/entropy/formosa/formosa.dart';
 ///
 /// This seed is Critical so it has to be encrypted using a key for secure storage.
 class Sa0 extends Plaintext {
-  static final int bytesSize = 128;
-
   Formosa formosa;
 
   /// Constructs an [Sa0] instance

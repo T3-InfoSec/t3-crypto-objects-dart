@@ -94,8 +94,6 @@ class UnsafeFormosaCandidate extends EntropyBytes {
 
   void validate() {
     var concatenatedBitsLength = bits.length + checksumBits.length;
-    print("entropy bits length: ${bits.length}");
-    print("checksum bits length: ${checksumBits.length}");
     var words = mnemonic.split(' ');
     var wordsPerPhrase = formosaTheme.data.wordsPerPhrase();
 
