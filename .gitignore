@@ -10,4 +10,4 @@ pubspec.lock
 doc/api/
 
 .DS_Store
-example/.DS_Store
+**/.DS_Store
