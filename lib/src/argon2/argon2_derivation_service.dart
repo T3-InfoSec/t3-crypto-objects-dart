@@ -61,7 +61,7 @@ class Argon2DerivationService {
   ///
   /// This method is designed to generate a secure key suitable for AES-GCM encryption by applying
   /// the Argon2id key derivation function on the input [key].
-  Future<SecretKey> deriveKey(String key) async {
+  Future<SecretKey> deriveKey(dynamic key) async {
     final argon2 = Argon2id(
       parallelism: 4,
       iterations: 3,
@@ -70,7 +70,7 @@ class Argon2DerivationService {
     );
 
     final SecretKey secretKey = await argon2.deriveKey(
-      secretKey: SecretKey(utf8.encode(key)),
+      secretKey: SecretKey(utf8.encode(key.toString())),
       nonce: [], // TODO: Review fixed nonce
     );
 

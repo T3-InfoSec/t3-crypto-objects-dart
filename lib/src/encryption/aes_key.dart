@@ -8,7 +8,7 @@ import 'package:t3_crypto_objects/src/encryption/plaintext.dart';
 abstract class AesKey {
   final AesGcm algorithm = AesGcm.with256bits();
 
-  final String key;
+  final dynamic key;
   late SecretKey? _secretKey;
 
   AesKey(this.key) {
