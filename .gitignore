@@ -8,3 +8,6 @@ pubspec.lock
 
 # Avoid committing doc/api/ for library packages
 doc/api/
+
+.DS_Store
+example/.DS_Store
