@@ -28,13 +28,13 @@ void main() {
 
     test('should generate valid mnemonic based on entropy', () {
       final entropy = Uint8List(16); // 128 bits of entropy
+      String expectedMnemonic = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+      
       final formosa = Formosa(entropy, theme);
       final mnemonic = formosa.mnemonic;
 
-      expect(mnemonic, isA<String>(),
+      expect(mnemonic, equals(expectedMnemonic),
           reason: 'Formosa should generate a valid mnemonic string.');
-      expect(mnemonic.split(' ').length, equals(12),
-          reason: '128 bits of entropy should produce 12 mnemonic words.');
     });
 
     test('should validate mnemonic reconstruction', () {
