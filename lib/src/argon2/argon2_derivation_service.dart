@@ -38,11 +38,9 @@ class Argon2DerivationService {
   /// resistance is required by increasing the cumulative processing time.
   EntropyBytes deriveWithHighMemory(int iterations, EntropyBytes entropyBytes) {
     Uint8List derivedHash = entropyBytes.value;
-    if (iterations > 0) {
-      for (int step = 0; step < iterations; step++) {
-        // if (_isCanceled) {print('Derivation canceled during long hashing.');return;} // TODO: Review unable to cancel flow during long bypass
-        derivedHash = highMemoryArgon2.convert(derivedHash).bytes;
-      }
+    for (int step = 0; step < iterations; step++) {
+      // if (_isCanceled) {print('Derivation canceled during long hashing.');return;} // TODO: Review unable to cancel flow during long bypass
+      derivedHash = highMemoryArgon2.convert(derivedHash).bytes;
     }
 
     return EntropyBytes(derivedHash);
