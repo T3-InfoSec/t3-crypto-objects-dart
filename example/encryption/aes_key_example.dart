@@ -1,8 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:t3_crypto_objects/crypto_objects.dart';
-import 'package:t3_crypto_objects/src/encryption/ciphertext.dart';
-import 'package:t3_crypto_objects/src/encryption/plaintext.dart';
+
 
 void main() async {
   final eka = Eka();
@@ -16,4 +15,13 @@ void main() async {
 
   final decryptedData = await eka.decrypt(ciphertext.concatenation());
   print("Plain text: ${decryptedData.value}");
+
+  final tlp = Tlp();
+  print("Tlp key: ${tlp.key}");
+  Ciphertext tlpCiphertext = await tlp.encrypt(plaintext);
+  print("Tlp Ciphertext: ${tlpCiphertext.ciphertextPayload}");
+
+  final tlpDecryptedData = await tlp.decrypt(tlpCiphertext.concatenation());
+  print("Tlp Plain text: ${tlpDecryptedData.value}");
+  
 }
