@@ -42,43 +42,81 @@ class FormosaService {
   }
 
   static EntropyBytes getEntropyBytesFromFormosaThemeWords(
-    int concatenatedBitsLength,
-    FormosaTheme formosaTheme,
-    List<String> words) {
+      int concatenatedBitsLength,
+      FormosaTheme formosaTheme,
+      List<String> words) {
+
+    List<String> fillingOrder = formosaTheme.data["FILLING_ORDER"];
+
+    List<int> phraseIndexes = formosaTheme.data.getPhraseIndexes(words);
+
+    print("phraseIndexes: $phraseIndexes");
+
+    String concatenationBits = '';
+    int wordIndex = 0;
+
+    for (String category in fillingOrder) {
+      int bitLength = formosaTheme.data[category]["BIT_LENGTH"];
+      List<String> categoryList = formosaTheme.data[category]["TOTAL_LIST"];
+
+      print("Processing category: $category, bitLength: $bitLength, categoryList: $categoryList");
+
+      for (int i = 0; i < categoryList.length && wordIndex < phraseIndexes.length; i++) {
+        String wordBinary = phraseIndexes[wordIndex].toRadixString(2).padLeft(bitLength, '0');
+        print("wordIndex: $wordIndex, wordBinary: $wordBinary");
+
+        concatenationBits += wordBinary;
+        wordIndex++;
+      }
+    }
 
     int entropyBitsLength = ConcatenatedBits.getEntropyBitsLength(concatenatedBitsLength);
 
-    // Get the phrase indexes based on the word list
-    List<int> phraseIndexes = formosaTheme.data.getPhraseIndexes(words);
-
-    // Convert phrase indexes to a concatenated bit string
-    String concatenationBits = phraseIndexes
-        .map((index) => index.toRadixString(2).padLeft(11, '0'))
-        .join();
-
-    // Extract the entropy bits from the concatenation (excluding the checksum bits)
     String entropyBits = concatenationBits.substring(0, entropyBitsLength);
+
+    print("Concatenated bits: $concatenationBits");
+    print("Entropy bits: $entropyBits");
 
     return EntropyBytes(EntropyBits.stringBitsToBytes(entropyBits));
   }
 
   static ChecksumBits getChecksumBitsFromFormosaThemeWords(
-    int concatenatedBitsLength,
-    FormosaTheme formosaTheme,
-    List<String> words) {
+      int concatenatedBitsLength,
+      FormosaTheme formosaTheme,
+      List<String> words) {
 
     int entropyBitsLength = ConcatenatedBits.getEntropyBitsLength(concatenatedBitsLength);
 
-    // Get the phrase indexes based on the word list
+    List<String> fillingOrder = formosaTheme.data["FILLING_ORDER"];
+
     List<int> phraseIndexes = formosaTheme.data.getPhraseIndexes(words);
 
-    // Convert phrase indexes to a concatenated bit string
-    String concatenationBits = phraseIndexes
-        .map((index) => index.toRadixString(2).padLeft(11, '0'))
-        .join();
+    print("phraseIndexes: $phraseIndexes");
 
-    List<bool> bits = concatenationBits
-        .substring(entropyBitsLength) // Get the checksum part
+    String concatenationBits = '';
+    int wordIndex = 0;
+
+    for (String category in fillingOrder) {
+      int bitLength = formosaTheme.data[category]["BIT_LENGTH"];
+      List<String> categoryList = formosaTheme.data[category]["TOTAL_LIST"];
+
+      print("Processing category: $category, bitLength: $bitLength, categoryList: $categoryList");
+
+      for (int i = 0; i < categoryList.length && wordIndex < phraseIndexes.length; i++) {
+        String wordBinary = phraseIndexes[wordIndex].toRadixString(2).padLeft(bitLength, '0');
+        print("wordIndex: $wordIndex, wordBinary: $wordBinary");
+
+        concatenationBits += wordBinary;
+        wordIndex++;
+      }
+    }
+
+    String checksumBitsString = concatenationBits.substring(entropyBitsLength);
+
+    print("Concatenated bits: $concatenationBits");
+    print("Checksum bits: $checksumBitsString");
+
+    List<bool> bits = checksumBitsString
         .split('')
         .map((bit) => bit == '1')
         .toList();
