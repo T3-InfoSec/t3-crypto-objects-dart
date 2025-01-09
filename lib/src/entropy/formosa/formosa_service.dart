@@ -41,88 +41,107 @@ class FormosaService {
     return concatenatedBitsLength % ConcatenatedBits.bitsPerGroup == 0;
   }
 
-  static EntropyBytes getEntropyBytesFromFormosaThemeWords(
-      int concatenatedBitsLength,
-      FormosaTheme formosaTheme,
-      List<String> words) {
+  /// Converts a mnemonic into the original entropy bytes that generated it.
+  ///
+  /// This method takes a list of words reporesenting mnemonic and, using the structure defined 
+  /// by the given theme (`formosaTheme`), reconstructs the entropy bits that were 
+  /// concatenated to form the mnemonic.
+  ///
+  /// The process follows the order specified in `FILLING_ORDER` to map words to 
+  /// specific categories in the theme. It calculates the indices of the words, 
+  /// converts these indices into concatenated bits, and finally extracts the bits 
+  /// corresponding to the entropy.
+static EntropyBytes getEntropyBytesFromFormosaThemeWords(
+    int concatenatedBitsLength,
+    FormosaTheme formosaTheme,
+    List<String> words) {
 
-    List<String> fillingOrder = formosaTheme.data["FILLING_ORDER"];
+  List<String> fillingOrder = formosaTheme.data["FILLING_ORDER"];
 
-    List<int> phraseIndexes = formosaTheme.data.getPhraseIndexes(words);
+  List<int> phraseIndexes = formosaTheme.data.getPhraseIndexes(words);
 
-    print("phraseIndexes: $phraseIndexes");
+  String concatenationBits = '';
+  int wordIndex = 0;
 
-    String concatenationBits = '';
-    int wordIndex = 0;
+  for (String category in fillingOrder) {
+    int bitLength = formosaTheme.data[category]["BIT_LENGTH"];
+    List<String> categoryWords = formosaTheme.data[category]["TOTAL_LIST"];
 
-    for (String category in fillingOrder) {
-      int bitLength = formosaTheme.data[category]["BIT_LENGTH"];
-      List<String> categoryList = formosaTheme.data[category]["TOTAL_LIST"];
+    while (wordIndex < phraseIndexes.length) {
+      String currentWord = words[wordIndex];
+      if (categoryWords.contains(currentWord)) {
+        int index = phraseIndexes[wordIndex];
+        String wordBits = index.toRadixString(2).padLeft(bitLength, '0');
+        concatenationBits += wordBits;
 
-      print("Processing category: $category, bitLength: $bitLength, categoryList: $categoryList");
-
-      for (int i = 0; i < categoryList.length && wordIndex < phraseIndexes.length; i++) {
-        String wordBinary = phraseIndexes[wordIndex].toRadixString(2).padLeft(bitLength, '0');
-        print("wordIndex: $wordIndex, wordBinary: $wordBinary");
-
-        concatenationBits += wordBinary;
         wordIndex++;
+      } else {
+        break;
       }
     }
-
-    int entropyBitsLength = ConcatenatedBits.getEntropyBitsLength(concatenatedBitsLength);
-
-    String entropyBits = concatenationBits.substring(0, entropyBitsLength);
-
-    print("Concatenated bits: $concatenationBits");
-    print("Entropy bits: $entropyBits");
-
-    return EntropyBytes(EntropyBits.stringBitsToBytes(entropyBits));
   }
 
-  static ChecksumBits getChecksumBitsFromFormosaThemeWords(
-      int concatenatedBitsLength,
-      FormosaTheme formosaTheme,
-      List<String> words) {
+  int entropyBitsLength = ConcatenatedBits.getEntropyBitsLength(concatenatedBitsLength);
 
-    int entropyBitsLength = ConcatenatedBits.getEntropyBitsLength(concatenatedBitsLength);
+  String entropyBits = concatenationBits.substring(0, entropyBitsLength);
 
-    List<String> fillingOrder = formosaTheme.data["FILLING_ORDER"];
+  return EntropyBytes(EntropyBits.stringBitsToBytes(entropyBits));
+}
 
-    List<int> phraseIndexes = formosaTheme.data.getPhraseIndexes(words);
 
-    print("phraseIndexes: $phraseIndexes");
+  /// Extracts the checksum bits from a given mnemonic.
+  ///
+  /// This method takes a list of words representing mnemonic and, using the structure defined 
+  /// by the given theme [formosaTheme], reconstructs the concatenated bits 
+  /// (entropy + checksum). It then extracts the section of the bits corresponding 
+  /// to the checksum.
+  ///
+  /// The process follows the order specified in `FILLING_ORDER` to map words to 
+  /// specific categories in the theme. It calculates the indices of the words, 
+  /// converts these indices into concatenated bits, and finally extracts the bits 
+  /// corresponding to the checksum.
+static ChecksumBits getChecksumBitsFromFormosaThemeWords(
+    int concatenatedBitsLength,
+    FormosaTheme formosaTheme,
+    List<String> words) {
+  
+  int entropyBitsLength =
+      ConcatenatedBits.getEntropyBitsLength(concatenatedBitsLength);
 
-    String concatenationBits = '';
-    int wordIndex = 0;
+  List<String> fillingOrder = formosaTheme.data["FILLING_ORDER"];
 
-    for (String category in fillingOrder) {
-      int bitLength = formosaTheme.data[category]["BIT_LENGTH"];
-      List<String> categoryList = formosaTheme.data[category]["TOTAL_LIST"];
+  List<int> phraseIndexes = formosaTheme.data.getPhraseIndexes(words);
 
-      print("Processing category: $category, bitLength: $bitLength, categoryList: $categoryList");
+  String concatenationBits = '';
+  int wordIndex = 0;
 
-      for (int i = 0; i < categoryList.length && wordIndex < phraseIndexes.length; i++) {
-        String wordBinary = phraseIndexes[wordIndex].toRadixString(2).padLeft(bitLength, '0');
-        print("wordIndex: $wordIndex, wordBinary: $wordBinary");
+  for (String category in fillingOrder) {
+    int bitLength = formosaTheme.data[category]["BIT_LENGTH"];
+    List<String> categoryWords = formosaTheme.data[category]["TOTAL_LIST"];
 
-        concatenationBits += wordBinary;
+    while (wordIndex < phraseIndexes.length) {
+      String currentWord = words[wordIndex];
+      if (categoryWords.contains(currentWord)) {
+        int index = phraseIndexes[wordIndex];
+        String wordBits = index.toRadixString(2).padLeft(bitLength, '0');
+        concatenationBits += wordBits;
+
         wordIndex++;
+      } else {
+        break;
       }
     }
-
-    String checksumBitsString = concatenationBits.substring(entropyBitsLength);
-
-    print("Concatenated bits: $concatenationBits");
-    print("Checksum bits: $checksumBitsString");
-
-    List<bool> bits = checksumBitsString
-        .split('')
-        .map((bit) => bit == '1')
-        .toList();
-
-    return ChecksumBits(bits);
   }
+
+  String checksumBitsString = concatenationBits.substring(entropyBitsLength);
+
+  List<bool> bits = checksumBitsString
+      .split('')
+      .map((bit) => bit == '1')
+      .toList();
+
+  return ChecksumBits(bits);
+}
 
   static int getConcatenatedBitsLength(int wordsLength, FormosaTheme formosaTheme) {
     int phrasesCount = wordsLength ~/ formosaTheme.data.wordsPerPhrase();

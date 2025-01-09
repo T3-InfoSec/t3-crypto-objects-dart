@@ -4,7 +4,7 @@ import 'package:t3_crypto_objects/src/entropy/formosa/unsafe_formosa_candidate.d
 void main() {
   final formosaTheme = FormosaTheme.global;
 
-  final unsafeFormosaCandidate = UnsafeFormosaCandidate.fromRandomWords(wordCount:  6, formosaTheme: formosaTheme);
+  final unsafeFormosaCandidate = UnsafeFormosaCandidate.fromRandomWords(wordCount: 6, formosaTheme: formosaTheme);
 
   print('Entropy: ${unsafeFormosaCandidate.value}');
   print('Mnemonic: ${unsafeFormosaCandidate.mnemonic}');
