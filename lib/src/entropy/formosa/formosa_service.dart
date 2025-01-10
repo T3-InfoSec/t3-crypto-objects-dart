@@ -43,14 +43,11 @@ class FormosaService {
 
   /// Converts a mnemonic into the original entropy bytes that generated it.
   ///
-  /// This method takes a list of words reporesenting mnemonic and, using the structure defined
-  /// by the given theme (`formosaTheme`), reconstructs the entropy bits that were
-  /// concatenated to form the mnemonic.
-  ///
-  /// The process follows the order specified in `FILLING_ORDER` to map words to
-  /// specific categories in the theme. It calculates the indices of the words,
-  /// converts these indices into concatenated bits, and finally extracts the bits
-  /// corresponding to the entropy.
+  /// This method processes a mnemonic list (`words`) based on the structure defined
+  /// in the theme (`formosaTheme`). It reconstructs the entropy bits by mapping the
+  /// mnemonic words to their indices, arranging them according to the `FILLING_ORDER`,
+  /// and converting these indices into binary strings.
+  /// For themes with a single category (e.g., `WORDS`), a simplified process is used.
   static EntropyBytes getEntropyBytesFromFormosaThemeWords(
       int concatenatedBitsLength,
       FormosaTheme formosaTheme,
@@ -58,64 +55,24 @@ class FormosaService {
     List<String> fillingOrder = formosaTheme.data["FILLING_ORDER"];
     List<int> phraseIndexes = formosaTheme.data.getPhraseIndexes(words);
 
+    // Handle single-category themes (e.g., bip39)
     if (fillingOrder.length == 1 && fillingOrder[0] == "WORDS") {
-      int entropyBitsLength =
-          ConcatenatedBits.getEntropyBitsLength(concatenatedBitsLength);
-
-      // Convert phrase indexes to a concatenated bit string
-      String concatenationBits = phraseIndexes
-          .map((index) => index.toRadixString(2).padLeft(11, '0'))
-          .join();
-
-      // Extract the entropy bits from the concatenation (excluding the checksum bits)
-      String entropyBits = concatenationBits.substring(0, entropyBitsLength);
-
-      return EntropyBytes(EntropyBits.stringBitsToBytes(entropyBits));
-    } else {
-      List<String> naturalOrder = formosaTheme.data["NATURAL_ORDER"];
-
-      // Obtener el mapeo del natural al filling order
-      Map<String, int> naturalToFillingIndexMap = {
-        for (var i = 0; i < naturalOrder.length; i++) naturalOrder[i]: i
-      };
-
-      // Reordenar los índices según el filling order
-      List<int> reorderedIndexes = List.filled(fillingOrder.length, -1);
-      for (int i = 0; i < naturalOrder.length; i++) {
-        String naturalCategory = naturalOrder[i];
-        int fillingIndex = naturalToFillingIndexMap[naturalCategory]!;
-        reorderedIndexes[fillingIndex] = phraseIndexes[i];
-      }
-
-      // Construir los bits concatenados respetando el filling order
-      String concatenationBits = '';
-      for (int i = 0; i < fillingOrder.length; i++) {
-        String category = fillingOrder[i];
-        int bitLength = formosaTheme.data[category]["BIT_LENGTH"];
-        int index = reorderedIndexes[i];
-        concatenationBits += index.toRadixString(2).padLeft(bitLength, '0');
-      }
-
-      // Calcular los bits de entropía
-      int entropyBitsLength =
-          ConcatenatedBits.getEntropyBitsLength(concatenatedBitsLength);
-      String entropyBits = concatenationBits.substring(0, entropyBitsLength);
-
-      return EntropyBytes(EntropyBits.stringBitsToBytes(entropyBits));
+      return _getEntropyBytesSingleCategory(
+          concatenatedBitsLength, phraseIndexes, formosaTheme);
     }
+
+    // Handle multi-category themes
+    return _getEntropyBytesMultiCategory(
+        concatenatedBitsLength, phraseIndexes, formosaTheme);
   }
 
   /// Extracts the checksum bits from a given mnemonic.
   ///
-  /// This method takes a list of words representing mnemonic and, using the structure defined
-  /// by the given theme [formosaTheme], reconstructs the concatenated bits
-  /// (entropy + checksum). It then extracts the section of the bits corresponding
-  /// to the checksum.
-  ///
-  /// The process follows the order specified in `FILLING_ORDER` to map words to
-  /// specific categories in the theme. It calculates the indices of the words,
-  /// converts these indices into concatenated bits, and finally extracts the bits
-  /// corresponding to the checksum.
+  /// This method processes a mnemonic list (`words`) based on the structure defined
+  /// in the theme (`formosaTheme`). It reconstructs the concatenated bits (entropy + checksum)
+  /// by mapping the mnemonic words to their indices, arranging them according to the
+  /// `FILLING_ORDER`, and converting these indices into binary strings.
+  /// For themes with a single category (e.g., `WORDS`), a simplified process is used.
   static ChecksumBits getChecksumBitsFromFormosaThemeWords(
       int concatenatedBitsLength,
       FormosaTheme formosaTheme,
@@ -123,53 +80,130 @@ class FormosaService {
     List<String> fillingOrder = formosaTheme.data["FILLING_ORDER"];
     List<int> phraseIndexes = formosaTheme.data.getPhraseIndexes(words);
 
+    // Handle single-category themes (e.g., bip39)
     if (fillingOrder.length == 1 && fillingOrder[0] == "WORDS") {
-      int entropyBitsLength =
-          ConcatenatedBits.getEntropyBitsLength(concatenatedBitsLength);
-
-      // Convert phrase indexes to a concatenated bit string
-      String concatenationBits = phraseIndexes
-          .map((index) => index.toRadixString(2).padLeft(11, '0'))
-          .join();
-
-      List<bool> bits = concatenationBits
-          .substring(entropyBitsLength) // Get the checksum part
-          .split('')
-          .map((bit) => bit == '1')
-          .toList();
-
-      return ChecksumBits(bits);
-    } else {
-      List<String> naturalOrder = formosaTheme.data["NATURAL_ORDER"];
-
-      Map<String, int> naturalToFillingIndexMap = {
-        for (var i = 0; i < naturalOrder.length; i++) naturalOrder[i]: i
-      };
-
-      List<int> reorderedIndexes = List.filled(fillingOrder.length, -1);
-      for (int i = 0; i < naturalOrder.length; i++) {
-        String naturalCategory = naturalOrder[i];
-        int fillingIndex = naturalToFillingIndexMap[naturalCategory]!;
-        reorderedIndexes[fillingIndex] = phraseIndexes[i];
-      }
-
-      String concatenationBits = '';
-      for (int i = 0; i < fillingOrder.length; i++) {
-        String category = fillingOrder[i];
-        int bitLength = formosaTheme.data[category]["BIT_LENGTH"];
-        int index = reorderedIndexes[i];
-        concatenationBits += index.toRadixString(2).padLeft(bitLength, '0');
-      }
-
-      int entropyBitsLength =
-          ConcatenatedBits.getEntropyBitsLength(concatenatedBitsLength);
-      String checksumBitsString =
-          concatenationBits.substring(entropyBitsLength);
-
-      List<bool> checksumBits =
-          checksumBitsString.split('').map((bit) => bit == '1').toList();
-      return ChecksumBits(checksumBits);
+      return _getChecksumBitsSingleCategory(
+          concatenatedBitsLength, phraseIndexes, formosaTheme);
     }
+
+    // Handle multi-category themes
+    return _getChecksumBitsMultiCategory(
+        concatenatedBitsLength, phraseIndexes, formosaTheme);
+  }
+
+  /// Helper method for single-category themes like bip39.
+  static EntropyBytes _getEntropyBytesSingleCategory(int concatenatedBitsLength,
+      List<int> phraseIndexes, FormosaTheme formosaTheme) {
+    int entropyBitsLength =
+        ConcatenatedBits.getEntropyBitsLength(concatenatedBitsLength);
+
+    // Convert phrase indexes to a concatenated bit string
+    String concatenationBits = phraseIndexes
+        .map((index) => index
+            .toRadixString(2)
+            .padLeft(formosaTheme.data["WORDS"]["BIT_LENGTH"], '0'))
+        .join();
+
+    // Extract the entropy bits
+    String entropyBits = concatenationBits.substring(0, entropyBitsLength);
+
+    return EntropyBytes(EntropyBits.stringBitsToBytes(entropyBits));
+  }
+
+  /// Helper method for multi-category themes.
+  static EntropyBytes _getEntropyBytesMultiCategory(int concatenatedBitsLength,
+      List<int> phraseIndexes, FormosaTheme formosaTheme) {
+    List<String> fillingOrder = formosaTheme.data["FILLING_ORDER"];
+    List<String> naturalOrder = formosaTheme.data["NATURAL_ORDER"];
+
+    Map<String, int> naturalToFillingIndexMap = {
+      for (var i = 0; i < naturalOrder.length; i++) naturalOrder[i]: i
+    };
+
+    // Reorder phrase indexes based on the filling order
+    List<int> reorderedIndexes = List.filled(fillingOrder.length, -1);
+    for (int i = 0; i < naturalOrder.length; i++) {
+      String naturalCategory = naturalOrder[i];
+      int fillingIndex = naturalToFillingIndexMap[naturalCategory]!;
+      reorderedIndexes[fillingIndex] = phraseIndexes[i];
+    }
+
+    // Build concatenated bits based on the filling order
+    String concatenationBits =
+        _buildConcatenatedBits(reorderedIndexes, fillingOrder, formosaTheme);
+
+    // Extract the entropy bits
+    int entropyBitsLength =
+        ConcatenatedBits.getEntropyBitsLength(concatenatedBitsLength);
+    String entropyBits = concatenationBits.substring(0, entropyBitsLength);
+
+    return EntropyBytes(EntropyBits.stringBitsToBytes(entropyBits));
+  }
+
+  /// Helper method for single-category themes like bip39.
+  static ChecksumBits _getChecksumBitsSingleCategory(int concatenatedBitsLength,
+      List<int> phraseIndexes, FormosaTheme formosaTheme) {
+    int entropyBitsLength =
+        ConcatenatedBits.getEntropyBitsLength(concatenatedBitsLength);
+
+    // Convert phrase indexes to a concatenated bit string
+    String concatenationBits = phraseIndexes
+        .map((index) => index
+            .toRadixString(2)
+            .padLeft(formosaTheme.data["WORDS"]["BIT_LENGTH"], '0'))
+        .join();
+
+    // Extract the checksum bits
+    String checksumBitsString = concatenationBits.substring(entropyBitsLength);
+
+    List<bool> checksumBits =
+        checksumBitsString.split('').map((bit) => bit == '1').toList();
+    return ChecksumBits(checksumBits);
+  }
+
+  /// Helper method for multi-category themes.
+  static ChecksumBits _getChecksumBitsMultiCategory(int concatenatedBitsLength,
+      List<int> phraseIndexes, FormosaTheme formosaTheme) {
+    List<String> fillingOrder = formosaTheme.data["FILLING_ORDER"];
+    List<String> naturalOrder = formosaTheme.data["NATURAL_ORDER"];
+
+    Map<String, int> naturalToFillingIndexMap = {
+      for (var i = 0; i < naturalOrder.length; i++) naturalOrder[i]: i
+    };
+
+    // Reorder phrase indexes based on the filling order
+    List<int> reorderedIndexes = List.filled(fillingOrder.length, -1);
+    for (int i = 0; i < naturalOrder.length; i++) {
+      String naturalCategory = naturalOrder[i];
+      int fillingIndex = naturalToFillingIndexMap[naturalCategory]!;
+      reorderedIndexes[fillingIndex] = phraseIndexes[i];
+    }
+
+    // Build concatenated bits based on the filling order
+    String concatenationBits =
+        _buildConcatenatedBits(reorderedIndexes, fillingOrder, formosaTheme);
+
+    // Extract the checksum bits
+    int entropyBitsLength =
+        ConcatenatedBits.getEntropyBitsLength(concatenatedBitsLength);
+    String checksumBitsString = concatenationBits.substring(entropyBitsLength);
+
+    List<bool> checksumBits =
+        checksumBitsString.split('').map((bit) => bit == '1').toList();
+    return ChecksumBits(checksumBits);
+  }
+
+  /// Builds concatenated bits from reordered indexes and the filling order.
+  static String _buildConcatenatedBits(List<int> reorderedIndexes,
+      List<String> fillingOrder, FormosaTheme formosaTheme) {
+    String concatenationBits = '';
+    for (int i = 0; i < fillingOrder.length; i++) {
+      String category = fillingOrder[i];
+      int bitLength = formosaTheme.data[category]["BIT_LENGTH"];
+      int index = reorderedIndexes[i];
+      concatenationBits += index.toRadixString(2).padLeft(bitLength, '0');
+    }
+    return concatenationBits;
   }
 
   static int getConcatenatedBitsLength(
