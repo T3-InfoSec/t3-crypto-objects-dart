@@ -2,9 +2,9 @@ import 'package:t3_crypto_objects/src/entropy/formosa/formosa_theme.dart';
 import 'package:t3_crypto_objects/src/entropy/formosa/unsafe_formosa_candidate.dart';
 
 void main() {
-  final formosaTheme = FormosaTheme.bip39;
+  final formosaTheme = FormosaTheme.global;
 
-  final unsafeFormosaCandidate = UnsafeFormosaCandidate.fromRandomWords(wordCount:  12, formosaTheme: formosaTheme);
+  final unsafeFormosaCandidate = UnsafeFormosaCandidate.fromRandomWords(wordCount: 6, formosaTheme: formosaTheme);
 
   print('Entropy: ${unsafeFormosaCandidate.value}');
   print('Mnemonic: ${unsafeFormosaCandidate.mnemonic}');
@@ -28,6 +28,7 @@ void main() {
   if (formosa != null) {
     print('\nConverted to Formosa:');
     print('Value: ${formosa.value}');
+    print('Value: ${formosa.mnemonic}');
     print('Checksum Bits: ${formosa.checksumBits.bits}');
   } else {
     print('\nCandidate is not valid Formosa');

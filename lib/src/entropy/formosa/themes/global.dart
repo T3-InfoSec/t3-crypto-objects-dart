@@ -73,7 +73,7 @@ const Map<String, dynamic> gLobalData = {
     ]
   },
   "ORIGIN2": {
-    "BIT_LENGTH": 7,
+    "BIT_LENGTH": 6,
     "LED_BY": "NONE",
     "LEADS": [],
     "TOTAL_LIST": [

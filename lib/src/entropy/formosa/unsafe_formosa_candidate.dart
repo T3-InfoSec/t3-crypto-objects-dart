@@ -48,7 +48,7 @@ class UnsafeFormosaCandidate extends EntropyBytes {
     ChecksumBits checksumBits =
         FormosaService.getChecksumBitsFromFormosaThemeWords(
             concatenatedBitsLength, formosaTheme, words);
-
+            
     return UnsafeFormosaCandidate(entropyBytes.value, formosaTheme,
         checksumBits: checksumBits);
   }
