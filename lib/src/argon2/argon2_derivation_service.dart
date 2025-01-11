@@ -35,20 +35,25 @@ class Argon2DerivationService {
     return EntropyBytes(derivedHash);
   }
 
-  /// Derives a cryptographic hash using Argon2 with moderate memory usage given an [inputHash].
+  /// Derives a cryptographic hash using Argon2 with moderate memory usage given an [entropyBytes].
   ///
   /// This derivation is designed to require presumably little time, depending 
   /// on the specifications of the device running the process. It is suitable 
   /// for scenarios where a quick derivation process is desirable.
-  EntropyBytes deriveWithModerateMemory(int iterrations, EntropyBytes entropyBytes) {
+  ///
+  /// This method allows you to specify the number of [iterations], which determines 
+  /// the computational cost and security of the hash derivation process. Additionally, 
+  /// you can provide a custom [salt] to add randomness to the hashing. If no salt is 
+  /// provided, a default value of `Uint8List(32)` will be used.
+  EntropyBytes deriveWithModerateMemory(int iterations, EntropyBytes entropyBytes, {Uint8List? salt}) {
     final Argon2 moderateMemoryArgon2 = Argon2(
       version: Argon2Version.v13,
       type: Argon2Type.argon2i,
       hashLength: 128, // Bytes
-      iterations: iterrations,
-      parallelism: iterrations,
+      iterations: iterations,
+      parallelism: iterations,
       memorySizeKB: 10 * 1024, // 10 MB
-      salt: Uint8List(32),
+      salt: salt ?? Uint8List(32),
     );
     return EntropyBytes(moderateMemoryArgon2.convert(entropyBytes.value).bytes);
   }
