@@ -11,7 +11,13 @@ import 'package:t3_crypto_objects/crypto_objects.dart';
 /// memory configurations using the Argon2i variant of the Argon2 algorithm.
 class Argon2DerivationService {
 
-  final Argon2 highMemoryArgon2 = Argon2(
+  /// Derives a cryptographic hash using Argon2 with high memory usage given an [entropyBytes].
+  ///
+  /// To achieve a presumably high execution time, this method should be called 
+  /// multiple times. It is designed for scenarios where stronger computational 
+  /// resistance is required by increasing the cumulative processing time.
+  EntropyBytes deriveWithHighMemory(int iterations, EntropyBytes entropyBytes) {
+    final Argon2 highMemoryArgon2 = Argon2(
       version: Argon2Version.v13,
       type: Argon2Type.argon2i,
       hashLength: 128, // Bytes
@@ -20,23 +26,6 @@ class Argon2DerivationService {
       memorySizeKB: 1024 * 1024, // 1 GB
       salt: Uint8List(32),
     );
-  
-  final Argon2 moderateMemoryArgon2 = Argon2(
-      version: Argon2Version.v13,
-      type: Argon2Type.argon2i,
-      hashLength: 128, // Bytes
-      iterations: 1,
-      parallelism: 1,
-      memorySizeKB: 10 * 1024, // 10 MB
-      salt: Uint8List(32),
-    );
-
-  /// Derives a cryptographic hash using Argon2 with high memory usage given an [entropyBytes].
-  ///
-  /// To achieve a presumably high execution time, this method should be called 
-  /// multiple times. It is designed for scenarios where stronger computational 
-  /// resistance is required by increasing the cumulative processing time.
-  EntropyBytes deriveWithHighMemory(int iterations, EntropyBytes entropyBytes) {
     Uint8List derivedHash = entropyBytes.value;
     for (int step = 0; step < iterations; step++) {
       // if (_isCanceled) {print('Derivation canceled during long hashing.');return;} // TODO: Review unable to cancel flow during long bypass
@@ -51,7 +40,16 @@ class Argon2DerivationService {
   /// This derivation is designed to require presumably little time, depending 
   /// on the specifications of the device running the process. It is suitable 
   /// for scenarios where a quick derivation process is desirable.
-  EntropyBytes deriveWithModerateMemory(EntropyBytes entropyBytes) {
+  EntropyBytes deriveWithModerateMemory(int iterrations, EntropyBytes entropyBytes) {
+    final Argon2 moderateMemoryArgon2 = Argon2(
+      version: Argon2Version.v13,
+      type: Argon2Type.argon2i,
+      hashLength: 128, // Bytes
+      iterations: iterrations,
+      parallelism: iterrations,
+      memorySizeKB: 10 * 1024, // 10 MB
+      salt: Uint8List(32),
+    );
     return EntropyBytes(moderateMemoryArgon2.convert(entropyBytes.value).bytes);
   }
 

@@ -55,15 +55,15 @@ void main() {
     test('deriveWithModerateMemory returns a valid derived hash', () {
       final expectedDerivedHash = EntropyBytes(Uint8List.fromList([12, 39, 0, 74, 214, 196, 56, 142, 165, 181, 77, 234, 94, 126, 150, 56, 239, 113, 243, 109, 129, 255, 111, 6, 240, 216, 95, 224, 118, 35, 149, 107, 11, 140, 140, 102, 221, 53, 132, 214, 153, 149, 104, 44, 114, 25, 63, 89, 254, 45, 93, 194, 167, 131, 86, 1, 214, 3, 122, 238, 65, 162, 237, 114, 151, 154, 254, 208, 243, 217, 27, 205, 207, 255, 157, 4, 196, 180, 106, 102, 204, 185, 13, 150, 49, 86, 3, 201, 155, 89, 6, 255, 242, 2, 60, 174, 119, 248, 128, 16, 3, 139, 134, 146, 227, 5, 239, 92, 92, 70, 159, 48, 200, 54, 70, 1, 68, 87, 230, 150, 18, 166, 24, 211, 214, 94, 240, 146]));
       
-      final derivedHash = argon2Service.deriveWithModerateMemory(entropyBytes);
+      final derivedHash = argon2Service.deriveWithModerateMemory(1, entropyBytes);
 
       expect(derivedHash.value, equals(expectedDerivedHash.value),
           reason: 'The derived hash should be as expected');
     });
 
     test('deriveWithModerateMemory is deterministic for the same input', () {
-      final derivedHash1 = argon2Service.deriveWithModerateMemory(entropyBytes);
-      final derivedHash2 = argon2Service.deriveWithModerateMemory(entropyBytes);
+      final derivedHash1 = argon2Service.deriveWithModerateMemory(1, entropyBytes);
+      final derivedHash2 = argon2Service.deriveWithModerateMemory(1, entropyBytes);
 
       expect(derivedHash1.value, equals(derivedHash2.value),
           reason: 'The derived hash should be the same for identical inputs.');
@@ -74,8 +74,8 @@ void main() {
       final entropyBytes2 =
           EntropyBytes(Uint8List.fromList([1, 2, 3, 4, 5, 6]));
 
-      final derivedHash1 = argon2Service.deriveWithModerateMemory(entropyBytes);
-      final derivedHash2 = argon2Service.deriveWithModerateMemory(entropyBytes2);
+      final derivedHash1 = argon2Service.deriveWithModerateMemory(1, entropyBytes);
+      final derivedHash2 = argon2Service.deriveWithModerateMemory(1, entropyBytes2);
 
       expect(derivedHash1.value, isNot(equals(derivedHash2.value)),
           reason:
