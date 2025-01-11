@@ -71,7 +71,7 @@ class Argon2DerivationService {
     return EntropyBytes(moderateMemoryArgon2.convert(entropyBytes.value).bytes);
   }
 
-  /// Derives a cryptographic hash using Argon2 with moderate memory usage given an [inputHash].
+  /// Derives a cryptographic hash using Argon2 with low memory usage given an [inputHash].
   ///
   /// This derivation is designed to require presumably little time, depending 
   /// on the specifications of the device running the process. It is suitable 
