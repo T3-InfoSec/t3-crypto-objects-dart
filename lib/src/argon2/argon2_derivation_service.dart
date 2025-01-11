@@ -31,6 +31,16 @@ class Argon2DerivationService {
       salt: Uint8List(32),
     );
 
+  final Argon2 lowMemoryArgon2 = Argon2(
+      version: Argon2Version.v13,
+      type: Argon2Type.argon2i,
+      hashLength: 16, // Bytes
+      iterations: 1,
+      parallelism: 1,
+      memorySizeKB: 1024, // 1 MB
+      salt: Uint8List(32),
+    );
+
   /// Derives a cryptographic hash using Argon2 with high memory usage given an [entropyBytes].
   ///
   /// To achieve a presumably high execution time, this method should be called 
@@ -53,6 +63,15 @@ class Argon2DerivationService {
   /// for scenarios where a quick derivation process is desirable.
   EntropyBytes deriveWithModerateMemory(EntropyBytes entropyBytes) {
     return EntropyBytes(moderateMemoryArgon2.convert(entropyBytes.value).bytes);
+  }
+
+  /// Derives a cryptographic hash using Argon2 with moderate memory usage given an [inputHash].
+  ///
+  /// This derivation is designed to require presumably little time, depending 
+  /// on the specifications of the device running the process. It is suitable 
+  /// for scenarios where a quick derivation process is desirable.
+  EntropyBytes deriveWithLowMemory(EntropyBytes entropyBytes) {
+    return EntropyBytes(lowMemoryArgon2.convert(entropyBytes.value).bytes);
   }
 
   /// Derives a 256-bit AES encryption key from the provided [key] string using the Argon2id algorithm.
