@@ -37,8 +37,8 @@ class Tlp extends AesKey {
       prime2: prime2,
     );
     privatePrimesManager.init();
-    prime1 = BigInt.from(0);
-    prime2 = BigInt.from(0);
+    prime1 = BigInt.zero;
+    prime2 = BigInt.zero;
     return privatePrimesManager.fastPower;
   }
 
@@ -65,9 +65,9 @@ class PrimeManager {
     required this.prime2,
   });
 
-  BigInt carmichael = BigInt.from(0);
-  BigInt _fastExp = BigInt.from(0);
-  BigInt fastPower = BigInt.from(0);
+  BigInt carmichael = BigInt.zero;
+  BigInt _fastExp = BigInt.zero;
+  BigInt fastPower = BigInt.zero;
 
   /// Initialize the prime numbers and carmichael function
   init() {
