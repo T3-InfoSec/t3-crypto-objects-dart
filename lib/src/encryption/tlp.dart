@@ -6,6 +6,8 @@ import 'package:t3_crypto_objects/src/tlp_helper/tlp.dart';
 class Tlp extends AesKey {
   final int? bits;
   static late PrimeManager privatePrimesManager;
+  static BigInt _prime1 = BigInt.zero;
+  static BigInt _prime2 = BigInt.zero;
 
   /// Constructor that automatically generates a new secure BigInt (TLP answer) [key].
   Tlp({this.bits = 2048}) : super(_generateBigIntKey(bits: bits));
@@ -23,9 +25,9 @@ class Tlp extends AesKey {
     BigInt baseg = tlpHelper.generatedBase;
     BigInt tBigInt = BigInt.from(t);
 
-    BigInt prime1 = tlpHelper.generatedPrime;
-    BigInt prime2 = tlpHelper.generatedPrime;
-    BigInt primeProduct = tlpHelper.comupteProductOfPrime(prime1, prime2);
+    _prime1 = tlpHelper.generatedPrime;
+    _prime2 = tlpHelper.generatedPrime;
+    BigInt primeProduct = tlpHelper.comupteProductOfPrime(_prime1, _prime2);
 
     privatePrimesManager = PrimeManager(
       bits,
@@ -33,16 +35,16 @@ class Tlp extends AesKey {
       baseg: baseg,
       t: tBigInt,
       primeProduct: primeProduct,
-      prime1: prime1,
-      prime2: prime2,
+      prime1: _prime1,
+      prime2: _prime1,
     );
     privatePrimesManager.init();
-    prime1 = BigInt.zero;
-    prime2 = BigInt.zero;
     return privatePrimesManager.fastPower;
   }
 
   void dispose() {
+    _prime1 = BigInt.zero;
+    _prime2 = BigInt.zero;
     privatePrimesManager.dispose();
   }
 }
