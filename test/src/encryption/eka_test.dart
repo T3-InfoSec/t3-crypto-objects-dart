@@ -27,7 +27,7 @@ void main() {
     () {
       test('TLP.fromKey uses the provided key', () {
         final providedKey = BigInt.from(3459835368198562363);
-        final tlp = Tlp.fromKey(providedKey);
+        final tlp = Tlp.fromKey(providedKey, bits:2048);
         expect(tlp.key, equals(providedKey), reason: 'TLP.fromKey should correctly assign the provided key.');
       });
 

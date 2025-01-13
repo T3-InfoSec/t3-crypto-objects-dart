@@ -10,22 +10,30 @@ void main() {
     });
 
     test('Generated key is different each time', () {
+      
       final tlp1 = Tlp();
       final tlp2 = Tlp();
-      expect(tlp1.key, isNot(equals(tlp2.key)), reason: 'Two TLP instances should generate different keys.');
+      expect(
+        tlp1.key,
+        isNot(equals(tlp2.key)),
+        reason: 'Two TLP instances should generate different keys. There is a bug in random number generation',
+      );
     });
 
     test('Generated key is non-zero', () {
+      
       final tlp = Tlp();
       expect(tlp.key, isNot(BigInt.zero), reason: 'Generated key should never be zero');
     });
 
     test('Generated key is positive', () {
+
       final tlp = Tlp();
       expect(tlp.key.isNegative, isFalse, reason: 'Generated key should always be positive');
     });
 
     test('Multiple generations produce valid keys', () {
+
       final keys = List.generate(100, (_) => Tlp().key);
       for (final key in keys) {
         expect(key.isNegative, isFalse, reason: 'Keys should never be negative');
@@ -35,7 +43,9 @@ void main() {
     });
 
     test('TLP.fromKey with very large key', () {
+      
       final largeKey = BigInt.parse('1' * 100);
+
       final tlp = Tlp.fromKey(largeKey);
       expect(tlp.key, equals(largeKey), reason: 'Should handle very large keys correctly');
     });
