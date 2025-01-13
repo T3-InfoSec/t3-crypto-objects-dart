@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:t3_crypto_objects/crypto_objects.dart';
 import 'package:test/test.dart';
 
@@ -10,7 +12,6 @@ void main() {
     });
 
     test('Generated key is different each time', () {
-      
       final tlp1 = Tlp();
       final tlp2 = Tlp();
       expect(
@@ -21,19 +22,16 @@ void main() {
     });
 
     test('Generated key is non-zero', () {
-      
       final tlp = Tlp();
       expect(tlp.key, isNot(BigInt.zero), reason: 'Generated key should never be zero');
     });
 
     test('Generated key is positive', () {
-
       final tlp = Tlp();
       expect(tlp.key.isNegative, isFalse, reason: 'Generated key should always be positive');
     });
 
     test('Multiple generations produce valid keys', () {
-
       final keys = List.generate(100, (_) => Tlp().key);
       for (final key in keys) {
         expect(key.isNegative, isFalse, reason: 'Keys should never be negative');
@@ -42,12 +40,16 @@ void main() {
       }
     });
 
-    test('TLP.fromKey with very large key', () {
-      
-      final largeKey = BigInt.parse('1' * 100);
-
-      final tlp = Tlp.fromKey(largeKey);
-      expect(tlp.key, equals(largeKey), reason: 'Should handle very large keys correctly');
+    test('TLP.fromKey with progressively large bit', () {
+      final key = BigInt.from(3459835368198562363);
+      final stopwatch = Stopwatch()..start();
+      for (var i = 256; i <= 4080; i++) {
+        final tlp = Tlp.fromKey(key, bits: i);
+        tlp.encrypt(Plaintext(Uint8List.fromList('Hello World'.codeUnits)));
+        print('TLP.fromKey with progressively large bit (bit: $i) - Time elapsed: ${stopwatch.elapsedMilliseconds} ms');
+        expect(tlp.key, equals(key), reason: 'TLP.fromKey should correctly assign the provided key.');
+      }
+      stopwatch.stop();
     });
 
     test('Generated keys are unique across many generations', () {
