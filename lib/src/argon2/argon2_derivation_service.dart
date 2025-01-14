@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:cryptography/cryptography.dart';
 import 'package:hashlib/hashlib.dart';
 import 'package:t3_crypto_objects/crypto_objects.dart';
+import 'package:t3_crypto_objects/src/entropy/sa1i.dart';
 
 /// A service for performing hash derivation using the Argon2 algorithm.
 ///
@@ -33,10 +34,10 @@ class Argon2DerivationService {
 
   /// Derives a cryptographic hash using Argon2 with high memory usage given an [entropyBytes].
   ///
-  /// To achieve a presumably high execution time, this method should be called 
-  /// multiple times. It is designed for scenarios where stronger computational 
+  /// To achieve a presumably high execution time, this method executes the derivation in loop n [iterations].
+  /// It is designed for scenarios where stronger computational 
   /// resistance is required by increasing the cumulative processing time.
-  EntropyBytes deriveWithHighMemory(int iterations, EntropyBytes entropyBytes) {
+  EntropyBytes highMemoryIterativeDerivation(int iterations, EntropyBytes entropyBytes) {
     Uint8List derivedHash = entropyBytes.value;
     for (int step = 0; step < iterations; step++) {
       // if (_isCanceled) {print('Derivation canceled during long hashing.');return;} // TODO: Review unable to cancel flow during long bypass
@@ -46,12 +47,17 @@ class Argon2DerivationService {
     return EntropyBytes(derivedHash);
   }
 
+  /// Derives a cryptographic hash using Argon2 with high memory usage given an [entropyBytes].
+  EntropyBytes highMemoryDerivation(EntropyBytes entropyBytes) {
+    return  EntropyBytes(highMemoryArgon2.convert(entropyBytes.value).bytes);
+  }
+
   /// Derives a cryptographic hash using Argon2 with moderate memory usage given an [inputHash].
   ///
   /// This derivation is designed to require presumably little time, depending 
   /// on the specifications of the device running the process. It is suitable 
   /// for scenarios where a quick derivation process is desirable.
-  EntropyBytes deriveWithModerateMemory(EntropyBytes entropyBytes) {
+  EntropyBytes moderateMemoryDerivation(EntropyBytes entropyBytes) {
     return EntropyBytes(moderateMemoryArgon2.convert(entropyBytes.value).bytes);
   }
 
