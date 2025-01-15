@@ -1,8 +1,10 @@
+import 'dart:typed_data';
+
+import 'package:t3_crypto_objects/src/entropy/sa1i.dart';
 import 'package:test/test.dart';
 import 'package:t3_crypto_objects/src/entropy/sa0.dart';
 import 'package:t3_crypto_objects/src/entropy/sa1.dart';
 import 'package:t3_crypto_objects/src/entropy/formosa/formosa.dart';
-import 'package:t3_crypto_objects/src/argon2/argon2_derivation_service.dart';
 
 void main() {
   group('Sa1', () {
@@ -25,7 +27,7 @@ void main() {
     test('Sa1.toString returns correct format', () {
       final sa1 = Sa1();
 
-      expect(sa1.toString(), equals('Sa1(seed: ${String.fromCharCodes(sa1.value)}'));
+      expect(sa1.toString(), equals('Sa1(seed: ${sa1.value})'));
     });
 
     test('Sa1 generates intermediate states during derivation', () {
@@ -34,14 +36,26 @@ void main() {
 
       final finalHash = sa1.deriveWithIntermediateStates(iterations);
 
-      expect(sa1.intermediates.length, equals(iterations));
+      expect(sa1.intermediateState.value, equals(finalHash));
+      expect(sa1.intermediateState.currentIteration, equals(5));
+      expect(sa1.intermediateState.totalIterations, equals(5));
+    });
 
-      for (int i = 0; i < iterations; i++) {
-        expect(sa1.intermediates[i].iteration, equals(i + 1));
-        expect(sa1.intermediates[i].value, isNotEmpty);
-      }
+    test('Sa1 resume derivation', () {
+      final sa1 = Sa1();
 
-      expect(finalHash, equals(sa1.intermediates.last.value));
+      final auxIntermediateHash = sa1.deriveWithIntermediateStates(3);
+
+      sa1.intermediateState = Sa1i(auxIntermediateHash, 3, 5);
+
+      final expectedFinalHash = sa1.deriveWithIntermediateStates(5);
+
+      final actualFinalHash = sa1.resumeDerivation();
+
+      expect(actualFinalHash, equals(expectedFinalHash));
+      expect(sa1.intermediateState.value, actualFinalHash);
+      expect(sa1.intermediateState.currentIteration, equals(5));
+      expect(sa1.intermediateState.totalIterations, equals(5));
     });
   });
 }

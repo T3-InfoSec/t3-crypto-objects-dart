@@ -4,11 +4,12 @@ import 'entropy_bytes.dart';
 /// 
 /// This allows saving and resuming the derivation process at any iteration.
 class Sa1i extends EntropyBytes {
-  final int iteration;
+  final int currentIteration;
+  final int totalIterations;
 
   /// Constructs an instance of [Sa1i] with a specific [value] and [iteration].
-  Sa1i(super.value, this.iteration);
+  Sa1i(super.value, this.currentIteration, this.totalIterations);
 
   @override
-  String toString() => 'Sa1i(iteration: $iteration, value: $value)';
+  String toString() => 'Sa1i(value: $value, currentIteration: $currentIteration, totalIterations: $totalIterations)';
 }

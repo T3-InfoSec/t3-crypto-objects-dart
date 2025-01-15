@@ -21,7 +21,6 @@ void main() {
   // Derive Sa2 from Sa1
   Sa2 sa2 = Sa2();
   sa2.from(5, sa1);
-  print(sa1.intermediates);
   print('Derived Sa2: ${sa2.toString()}}');
 
   // Derive Sa3 from Sa0 and Sa2

@@ -13,8 +13,8 @@ import 'entropy_bytes.dart';
 class Sa1 extends EntropyBytes {
   static final int bytesSize = 128;
 
-  /// List of intermediate states Sa1i produced during the derivation process.
-  final List<Sa1i> intermediates = [];
+  /// Intermediate state [Sa1i] produced during the derivation process.
+  late Sa1i intermediateState;
 
   /// Constructs an instance of [Sa1] with an initial entropy [value]
   /// of [bytesSize] bytes.
@@ -29,22 +29,38 @@ class Sa1 extends EntropyBytes {
   void from(Sa0 sa0) {
     print('Deriving SA1 from SA0');
     value = Argon2DerivationService().moderateMemoryDerivation(sa0.formosa).value;
+    intermediateState = Sa1i(value, 0, 0);
   }
 
   /// Performs a derivation process, generating intermediate states.
   /// Updates the list of intermediates and returns the final state.
   Uint8List deriveWithIntermediateStates(int iterations) {
     Uint8List currentHash = value;
-    intermediates.clear(); // Clear previous states.
 
-    for (int step = 0; step < iterations; step++) {
+    for (int step = 1; step <= iterations; step++) {
       currentHash = Argon2DerivationService().highMemoryDerivation(EntropyBytes(currentHash)).value;
-      intermediates.add(Sa1i(currentHash, step + 1));
+      intermediateState = Sa1i(currentHash, step, iterations);
+      print("Intermediate state $step: ${intermediateState.value}");
+    }
+
+    return currentHash;
+  }
+
+  /// Resumes the derivation process from a given intermediate state.
+  /// This method updates the [value] and continues the derivation.
+  Uint8List resumeDerivation() {
+    Uint8List currentHash = intermediateState.value;
+    int currentIteration = intermediateState.currentIteration + 1;
+    int totalIterations = intermediateState.totalIterations;
+
+    for (int step = currentIteration; step <= totalIterations; step++) {
+      currentHash = Argon2DerivationService().highMemoryDerivation(EntropyBytes(currentHash)).value;
+      intermediateState = Sa1i(currentHash, step, totalIterations);
     }
 
     return currentHash;
   }
 
   @override
-  String toString() => 'Sa1(seed: $value';
+  String toString() => 'Sa1(seed: $value)';
 }
