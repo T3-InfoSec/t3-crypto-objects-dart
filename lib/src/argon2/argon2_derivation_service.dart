@@ -76,7 +76,7 @@ class Argon2DerivationService {
   /// This derivation is designed to require presumably little time, depending 
   /// on the specifications of the device running the process. It is suitable 
   /// for scenarios where a quick derivation process is desirable.
-  EntropyBytes deriveWithLowMemory(EntropyBytes entropyBytes) {
+  EntropyBytes lowMemoryDerivation(EntropyBytes entropyBytes) {
     return EntropyBytes(lowMemoryArgon2.convert(entropyBytes.value).bytes);
   }
 

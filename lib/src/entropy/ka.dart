@@ -21,7 +21,7 @@ class KA extends Node {
       : hexadecimalValue = hex.encode(value),
         formosa = Formosa(
             Argon2DerivationService()
-                .deriveWithLowMemory(EntropyBytes(value))
+                .lowMemoryDerivation(EntropyBytes(value))
                 .value,
             FormosaTheme.bip39);
 }
