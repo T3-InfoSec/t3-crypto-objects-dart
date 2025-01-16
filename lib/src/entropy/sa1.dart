@@ -14,11 +14,11 @@ import 'entropy_bytes.dart';
 class Sa1 extends EntropyBytes {
   static final int bytesSize = 128;
 
-  /// Intermediate state [Sa1i] produced during the derivation process.
-  late Sa1i intermediateState;
+  /// Intermediate state [Sa1i] list produced during the derivation process.
+  late List<Sa1i> intermediateStates = [];
 
   /// StreamController to emit updates when intermediateState changes.
-  final StreamController<Sa1i> _intermediateStateController = StreamController<Sa1i>.broadcast();
+  final StreamController<List<Sa1i>> _intermediateStatesController = StreamController<List<Sa1i>>.broadcast();
 
   /// Constructs an instance of [Sa1] with an initial entropy [value]
   /// of [bytesSize] bytes.
@@ -27,7 +27,7 @@ class Sa1 extends EntropyBytes {
   Sa1() : super(Uint8List(bytesSize));
 
   /// Exposes the Stream for subscribing to intermediate state changes.
-  Stream<Sa1i> get intermediateStateStream => _intermediateStateController.stream;
+  Stream<List<Sa1i>> get intermediateStatesStream => _intermediateStatesController.stream;
 
   /// Derives the entropy [value] from the given initial entropy [sa0].
   /// 
@@ -36,7 +36,6 @@ class Sa1 extends EntropyBytes {
   void from(Sa0 sa0) {
     print('Deriving SA1 from SA0');
     value = Argon2DerivationService().moderateMemoryDerivation(sa0.formosa).value;
-    intermediateState = Sa1i(value, 0, 0);
   }
 
   /// Performs a derivation process, generating intermediate states.
@@ -46,8 +45,8 @@ class Sa1 extends EntropyBytes {
 
     for (int step = 1; step <= iterations; step++) {
       currentHash = Argon2DerivationService().highMemoryDerivation(EntropyBytes(currentHash)).value;
-      intermediateState = Sa1i(currentHash, step, iterations);
-      print("Intermediate state $step: ${intermediateState.value}");
+      intermediateStates.add(Sa1i(currentHash, step, iterations));
+      _intermediateStatesController.add(List.unmodifiable(intermediateStates));
     }
 
     return currentHash;
@@ -56,16 +55,27 @@ class Sa1 extends EntropyBytes {
   /// Resumes the derivation process from a given intermediate state.
   /// This method updates the [value] and continues the derivation.
   Uint8List resumeDerivation() {
-    Uint8List currentHash = intermediateState.value;
-    int currentIteration = intermediateState.currentIteration + 1;
-    int totalIterations = intermediateState.totalIterations;
+    Uint8List currentHash = intermediateStates.last.value;
+    int currentIteration = intermediateStates.last.currentIteration + 1;
+    int totalIterations = intermediateStates.last.totalIterations;
 
     for (int step = currentIteration; step <= totalIterations; step++) {
       currentHash = Argon2DerivationService().highMemoryDerivation(EntropyBytes(currentHash)).value;
-      intermediateState = Sa1i(currentHash, step, totalIterations);
+      intermediateStates.add(Sa1i(currentHash, step, totalIterations));
     }
 
     return currentHash;
+  }
+
+  /// Resumes the derivation process from a given intermediate state.
+  /// This method updates the [value] and continues the derivation.
+  bool checkDerivationStep(Sa1i intermediateState) {
+    return intermediateState.value == intermediateStates[intermediateState.currentIteration].value;
+  }
+
+  /// Closes the StreamController when it's no longer needed.
+  void dispose() {
+    _intermediateStatesController.close();
   }
 
   @override

@@ -19,9 +19,10 @@ void main() {
   sa1.from(sa0);
   print('Derived Sa1: ${sa1.toString()}');
 
-  // Subscribe to changes in intermediateState of Sa1
-  sa1.intermediateStateStream.listen((Sa1i intermediate) {
-    print("Intermediate state ${intermediate.currentIteration}: ${intermediate.value}");
+  // Subscribe to changes in intermediateStates of Sa1
+  sa1.intermediateStatesStream.listen((List<Sa1i> intermediateStates) {
+    print("Intermediate states length: ${intermediateStates.length}");
+    print("Last state: ${intermediateStates.last}");
   });
 
   // Derive Sa2 from Sa1
@@ -33,4 +34,7 @@ void main() {
   Sa3 sa3 = Sa3();
   sa3.from(sa0, sa2);
   print('Derived Sa3: ${sa3.toString()}}');
+
+  // Clean up resources
+  sa1.dispose();
 }
