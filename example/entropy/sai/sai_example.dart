@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:t3_crypto_objects/src/entropy/formosa/formosa_theme.dart';
 import 'package:t3_crypto_objects/src/entropy/sa0.dart';
 import 'package:t3_crypto_objects/src/entropy/sa1.dart';
+import 'package:t3_crypto_objects/src/entropy/sa1i.dart';
 import 'package:t3_crypto_objects/src/entropy/sa2.dart';
 import 'package:t3_crypto_objects/src/entropy/sa3.dart';
 import 'package:t3_crypto_objects/src/entropy/formosa/formosa.dart';
@@ -17,6 +18,11 @@ void main() {
   Sa1 sa1 = Sa1();
   sa1.from(sa0);
   print('Derived Sa1: ${sa1.toString()}');
+
+  // Subscribe to changes in intermediateState of Sa1
+  sa1.intermediateStateStream.listen((Sa1i intermediate) {
+    print("Intermediate state ${intermediate.currentIteration}: ${intermediate.value}");
+  });
 
   // Derive Sa2 from Sa1
   Sa2 sa2 = Sa2();

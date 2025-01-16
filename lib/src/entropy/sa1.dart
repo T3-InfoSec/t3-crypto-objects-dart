@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:t3_crypto_objects/src/argon2/argon2_derivation_service.dart';
@@ -16,11 +17,17 @@ class Sa1 extends EntropyBytes {
   /// Intermediate state [Sa1i] produced during the derivation process.
   late Sa1i intermediateState;
 
+  /// StreamController to emit updates when intermediateState changes.
+  final StreamController<Sa1i> _intermediateStateController = StreamController<Sa1i>.broadcast();
+
   /// Constructs an instance of [Sa1] with an initial entropy [value]
   /// of [bytesSize] bytes.
   /// 
   /// The initial entropy is initialized as an empty byte array of the specified size.
   Sa1() : super(Uint8List(bytesSize));
+
+  /// Exposes the Stream for subscribing to intermediate state changes.
+  Stream<Sa1i> get intermediateStateStream => _intermediateStateController.stream;
 
   /// Derives the entropy [value] from the given initial entropy [sa0].
   /// 
