@@ -25,7 +25,11 @@ class Sa2 extends EntropyBytes {
   /// Automatically updates [sa1]'s intermediates.
   Future<void> from(int iterations, Sa1 sa1) async {
     print('Deriving SA2 from SA1 with intermediate states');
-    value = await sa1.deriveWithIntermediateStates(iterations);
+    if (sa1.intermediateStates.isEmpty) {
+      value = await sa1.deriveWithIntermediateStates(iterations);
+    } else {
+      value = await sa1.resumeDerivation();
+    }
   }
 
   @override
