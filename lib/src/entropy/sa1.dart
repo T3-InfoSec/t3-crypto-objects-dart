@@ -40,13 +40,19 @@ class Sa1 extends EntropyBytes {
 
   /// Performs a derivation process, generating intermediate states.
   /// Updates the list of intermediates and returns the final state.
-  Uint8List deriveWithIntermediateStates(int iterations) {
+  Future<Uint8List> deriveWithIntermediateStates(int iterations) async {
     Uint8List currentHash = value;
 
     for (int step = 1; step <= iterations; step++) {
-      currentHash = Argon2DerivationService().highMemoryDerivation(EntropyBytes(currentHash)).value;
+      currentHash = Argon2DerivationService()
+          .highMemoryDerivation(EntropyBytes(currentHash))
+          .value;
+
       intermediateStates.add(Sa1i(currentHash, step, iterations));
       _intermediateStatesController.add(List.unmodifiable(intermediateStates));
+
+      // Briefly cede control to the main thread
+      await Future.delayed(Duration.zero);
     }
 
     return currentHash;
@@ -54,7 +60,7 @@ class Sa1 extends EntropyBytes {
 
   /// Resumes the derivation process from a given intermediate state.
   /// This method updates the [value] and continues the derivation.
-  Uint8List resumeDerivation() {
+  Future<Uint8List> resumeDerivation() async {
     Uint8List currentHash = intermediateStates.last.value;
     int currentIteration = intermediateStates.last.currentIteration + 1;
     int totalIterations = intermediateStates.last.totalIterations;
@@ -62,6 +68,10 @@ class Sa1 extends EntropyBytes {
     for (int step = currentIteration; step <= totalIterations; step++) {
       currentHash = Argon2DerivationService().highMemoryDerivation(EntropyBytes(currentHash)).value;
       intermediateStates.add(Sa1i(currentHash, step, totalIterations));
+      _intermediateStatesController.add(List.unmodifiable(intermediateStates));
+
+      // Briefly cede control to the main thread
+      await Future.delayed(Duration.zero);
     }
 
     return currentHash;

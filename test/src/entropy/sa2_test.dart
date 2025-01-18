@@ -11,13 +11,13 @@ void main() {
       expect(sa2.value, everyElement(equals(0)));
     });
 
-    test('Sa2 derivation updates value from Sa1', () {
+    test('Sa2 derivation updates value from Sa1', () async {
       final sa1 = Sa1();
       final initialValue = Uint8List(Sa1.bytesSize)..fillRange(0, Sa1.bytesSize, 42);
       sa1.value = initialValue;
 
       final sa2 = Sa2();
-      sa2.from(1, sa1);
+      await sa2.from(1, sa1);
 
       expect(sa2.value, isNot(equals(Uint8List(Sa2.bytesSize))));
       expect(sa2.value, isNot(contains(0)));
@@ -27,7 +27,7 @@ void main() {
       final sa2 = Sa2();
       sa2.value.fillRange(0, sa2.value.length, 42);
 
-      expect(sa2.toString(), equals('Sa2(seed: ${String.fromCharCodes(sa2.value)}'));
+      expect(sa2.toString(), equals('Sa2(seed: ${sa2.value})'));
     });
   });
 }

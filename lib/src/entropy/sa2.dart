@@ -23,11 +23,11 @@ class Sa2 extends EntropyBytes {
 
   /// Derives the entropy [value] based on the value from [sa1].
   /// Automatically updates [sa1]'s intermediates.
-  void from(int iterations, Sa1 sa1) {
+  Future<void> from(int iterations, Sa1 sa1) async {
     print('Deriving SA2 from SA1 with intermediate states');
-    value = sa1.deriveWithIntermediateStates(iterations);
+    value = await sa1.deriveWithIntermediateStates(iterations);
   }
 
   @override
-  String toString() => 'Sa2(seed: $value';
+  String toString() => 'Sa2(seed: $value)';
 }
