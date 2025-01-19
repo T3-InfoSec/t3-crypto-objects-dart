@@ -26,10 +26,10 @@ class Sa3 extends EntropyBytes {
   /// a derivation process.
   void from(Sa0 sa0, Sa2 sa2) {
     print('Deriving SA3 from SA2 and SA0');
-    value = Argon2DerivationService().deriveWithModerateMemory(
+    value = Argon2DerivationService().moderateMemoryDerivation(
         EntropyBytes(Uint8List.fromList(sa0.formosa.value + sa2.value))).value;
   }
 
   @override
-  String toString() => 'Sa3(seed: ${String.fromCharCodes(value)}';
+  String toString() => 'Sa3(seed: $value';
 }

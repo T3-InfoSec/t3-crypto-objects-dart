@@ -1,3 +1,4 @@
+import 'package:t3_crypto_objects/src/entropy/sa1i.dart';
 import 'package:test/test.dart';
 import 'package:t3_crypto_objects/src/entropy/sa0.dart';
 import 'package:t3_crypto_objects/src/entropy/sa1.dart';
@@ -24,7 +25,72 @@ void main() {
     test('Sa1.toString returns correct format', () {
       final sa1 = Sa1();
 
-      expect(sa1.toString(), equals('Sa1(seed: ${String.fromCharCodes(sa1.value)}'));
+      expect(sa1.toString(), equals('Sa1(seed: ${sa1.value})'));
+    });
+
+    test('Sa1 generates intermediate states during derivation', () async {
+      final formosa = Formosa.fromRandomWords();
+      final sa0 = Sa0(formosa);
+      final sa1 = Sa1();
+
+      sa1.from(sa0);
+
+      const iterations = 5;
+
+      final finalHash = await sa1.deriveWithIntermediateStates(iterations);
+
+      expect(sa1.intermediateStates.length, equals(5));
+      expect(sa1.intermediateStates.last.value, equals(finalHash));
+      expect(sa1.intermediateStates.last.currentIteration, equals(5));
+      expect(sa1.intermediateStates.last.totalIterations, equals(5));
+    });
+
+    test('Sa1 resume derivation', () async {
+      final formosa = Formosa.fromRandomWords();
+      final sa0 = Sa0(formosa);
+      final sa1 = Sa1();
+
+      sa1.from(sa0);
+
+      final auxIntermediateHash1 = await sa1.deriveWithIntermediateStates(1);
+      final auxIntermediateHash2 = await sa1.deriveWithIntermediateStates(2);
+
+      final expectedFinalHash = await sa1.deriveWithIntermediateStates(3);
+
+      sa1.intermediateStates = List.of([
+        Sa1i(auxIntermediateHash1, 1, 3),
+        Sa1i(auxIntermediateHash2, 2, 3),
+      ]);
+
+      final actualFinalHash = await sa1.resumeDerivation();
+
+      expect(actualFinalHash, equals(expectedFinalHash));
+      expect(sa1.intermediateStates.last.value, actualFinalHash);
+      expect(sa1.intermediateStates.last.currentIteration, equals(3));
+      expect(sa1.intermediateStates.last.totalIterations, equals(3));
+    });
+
+    test('Sa1 check derivation step should return true when it is correct',
+        () async {
+      final formosa = Formosa.fromRandomWords();
+      final sa0 = Sa0(formosa);
+      final sa1 = Sa1();
+
+      sa1.from(sa0);
+
+      final auxIntermediateHash1 = await sa1.deriveWithIntermediateStates(1);
+      final auxIntermediateHash2 = await sa1.deriveWithIntermediateStates(2);
+      final auxIntermediateHash3 = await sa1.deriveWithIntermediateStates(3);
+
+      sa1.intermediateStates = List.of([
+        Sa1i(auxIntermediateHash1, 1, 5),
+        Sa1i(auxIntermediateHash2, 2, 5),
+        Sa1i(auxIntermediateHash3, 3, 5)
+      ]);
+
+      final intermediateState = await sa1.deriveWithIntermediateStates(1);
+
+      sa1.checkDerivationStep(Sa1i(intermediateState, 1, 3));
     });
   });
 }

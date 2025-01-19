@@ -14,5 +14,5 @@ class Sa0 extends Plaintext {
       : super(formosa.value);
 
   @override
-  String toString() => 'Sa0(value: ${String.fromCharCodes(value)}';
+  String toString() => 'Sa0(value: $value';
 }

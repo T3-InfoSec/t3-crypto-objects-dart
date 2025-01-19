@@ -14,7 +14,7 @@ void main() {
 
       final expectedFormosa = Formosa(
             Argon2DerivationService()
-                .deriveWithLowMemory(EntropyBytes(entropy.value))
+                .lowMemoryDerivation(EntropyBytes(entropy.value))
                 .value, FormosaTheme.bip39);
 
       expect(ka.hexadecimalValue, equals(hex.encode(entropy.value)));

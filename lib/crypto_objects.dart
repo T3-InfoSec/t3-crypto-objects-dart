@@ -13,6 +13,7 @@ export 'src/entropy/ka.dart';
 export 'src/entropy/node.dart';
 export 'src/entropy/sa0.dart';
 export 'src/entropy/sa1.dart';
+export 'src/entropy/sa1i.dart';
 export 'src/entropy/sa2.dart';
 export 'src/entropy/sa3.dart';
 // formosa

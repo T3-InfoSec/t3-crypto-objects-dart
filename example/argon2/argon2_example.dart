@@ -11,11 +11,11 @@ void main() async {
   final EntropyBytes entropyBytes = EntropyBytes(Uint8List.fromList(utf8.encode(input)));
 
   print("Deriving with high memory...");
-  final highMemoryHash = derivationService.deriveWithHighMemory(2, entropyBytes);
+  final highMemoryHash = derivationService.highMemoryIterativeDerivation(2, entropyBytes);
   print("Derived hash: ${base64Encode(highMemoryHash.value)}");
 
   print("Deriving with moderate memory...");
-  final moderateMemoryHash = derivationService.deriveWithModerateMemory(entropyBytes);
+  final moderateMemoryHash = derivationService.moderateMemoryDerivation(entropyBytes);
   print("Derived hash: ${base64Encode(moderateMemoryHash.value)}");
 
   print("Deriving key AES...");
