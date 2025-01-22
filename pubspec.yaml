@@ -1,16 +1,16 @@
 name: t3_crypto_objects
-description:  A project in which the cryptographic objects used in the different greatwall modules are encapsulated.
+description: A project in which the cryptographic objects used in the different greatwall modules are encapsulated.
 version: 1.0.0
 
 environment:
-  sdk: ^3.5.4
+  sdk: ^3.6.1
 
 dependencies:
   cryptography: ^2.7.0
   hashlib: ^1.16.0
   convert: ^3.1.2
   crypto: ^3.0.5
-  collection: '1.19.0'
+  collection: "1.19.0"
 
 dev_dependencies:
   lints: ^4.0.0
