@@ -7,7 +7,8 @@ void main() async {
   final eka = Eka();
 
   final plaintext = Plaintext(Uint8List.fromList(
-      "Hello World, I love greatwall T3 is the best for doing great stuff for security!!!".codeUnits));
+      "Hello World, I love greatwall T3 is the best for doing great stuff for security!!!"
+          .codeUnits));
   print("Plaintext: ${plaintext.value}");
 
   Ciphertext ciphertext = await eka.encrypt(plaintext);
@@ -17,7 +18,8 @@ void main() async {
   final decryptedData = await eka.decrypt(ciphertext.concatenation());
   print("Plain text: ${decryptedData.value}");
 
-  final tlp = Tlp(bits: 256);  
+  final tlp = Tlp(bits: 1048576);
+
   print("Tlp key: ${tlp.key}");
   Ciphertext tlpCiphertext = await tlp.encrypt(plaintext);
   print("Tlp Ciphertext: ${tlpCiphertext.ciphertextPayload}");

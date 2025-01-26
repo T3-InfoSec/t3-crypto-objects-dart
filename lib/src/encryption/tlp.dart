@@ -5,84 +5,87 @@ import 'package:t3_crypto_objects/src/tlp_helper/tlp.dart';
 ///
 class Tlp extends AesKey {
   final int? bits;
-  static late PrimeManager privatePrimesManager;
-  static BigInt _prime1 = BigInt.zero;
-  static BigInt _prime2 = BigInt.zero;
+  static late TlpSecretKey tlpSecretKeyManager;
 
   /// Constructor that automatically generates a new secure BigInt (TLP answer) [key].
-  Tlp({this.bits = 2048}) : super(_generateBigIntKey(bits: bits));
+  Tlp({this.bits = 1048576}) : super(_generateBigIntKey(bits: bits));
 
   /// Constructor to create an instance of `Tlp` with an existing [key].
   Tlp.fromKey(super.key, {this.bits});
 
-  /// Static helper to generate the key.
+  /// Static helper to generate the key, TLP Key is a [BigInt] value computed using the [TlpHelper] class fast exponent.
   static BigInt _generateBigIntKey({
-    int? bits = 2048,
+    int? bits = 1048576,
     int t = 3,
   }) {
     TlpHelper tlpHelper = TlpHelper(bits: bits!);
-    BigInt base2 = BigInt.from(2);
+
     BigInt baseg = tlpHelper.generatedBase;
     BigInt tBigInt = BigInt.from(t);
 
-    _prime1 = tlpHelper.generatedPrime;
-    _prime2 = tlpHelper.generatedPrime;
-    BigInt primeProduct = tlpHelper.comupteProductOfPrime(_prime1, _prime2);
+    tlpSecretKeyManager = TlpSecretKey(bits);
 
-    privatePrimesManager = PrimeManager(
-      bits,
-      base2: base2,
+    final secretKeys = tlpSecretKeyManager.init(
       baseg: baseg,
       t: tBigInt,
-      primeProduct: primeProduct,
-      prime1: _prime1,
-      prime2: _prime1,
     );
-    privatePrimesManager.init();
-    return privatePrimesManager.fastPower;
+
+    BigInt primeProduct = secretKeys.$2;
+    //visible for testing
+    print('Prime Product: $primeProduct \n Baseg: $baseg \n T: $tBigInt');
+
+    return secretKeys.$1;
+  }
+
+  BigInt computeSlowPower(BigInt baseg, BigInt t, BigInt product, {int? bits}) {
+    final tlpHelper = TlpHelper(bits: bits ?? 1048576);
+    BigInt slowPower = baseg;
+
+    for (var i = BigInt.zero; i < t; i += BigInt.one) {
+      slowPower = tlpHelper.modExp(baseg, BigInt.two, product);
+    }
+
+    return slowPower;
   }
 
   void dispose() {
-    _prime1 = BigInt.zero;
-    _prime2 = BigInt.zero;
-    privatePrimesManager.dispose();
+    tlpSecretKeyManager.dispose();
   }
 }
 
-class PrimeManager {
+class TlpSecretKey {
   final int bits;
-  final BigInt base2;
-  final BigInt baseg;
-  final BigInt t;
-  final BigInt primeProduct;
-  final BigInt prime1;
-  final BigInt prime2;
-  PrimeManager(
-    this.bits, {
-    required this.base2,
-    required this.baseg,
-    required this.t,
-    required this.primeProduct,
-    required this.prime1,
-    required this.prime2,
-  });
 
-  BigInt carmichael = BigInt.zero;
+  TlpSecretKey(this.bits);
+
+  BigInt _prime1 = BigInt.zero;
+  BigInt _prime2 = BigInt.zero;
+  BigInt _carmichael = BigInt.zero;
   BigInt _fastExp = BigInt.zero;
-  BigInt fastPower = BigInt.zero;
+  BigInt _fastPower = BigInt.zero;
+  final BigInt _base2 = BigInt.from(2);
 
   /// Initialize the prime numbers and carmichael function
-  init() {
+  (BigInt, BigInt) init({required BigInt baseg, required BigInt t}) {
     final tlpHelper = TlpHelper(bits: bits);
-    carmichael = tlpHelper.calculateCarmichael(prime1, prime2);
-    _fastExp = tlpHelper.modExp(base2, t, carmichael);
-    fastPower = tlpHelper.modExp(baseg, _fastExp, primeProduct);
+
+    _prime1 = tlpHelper.generatedPrime;
+    _prime2 = tlpHelper.generatedPrime;
+
+    _carmichael = tlpHelper.calculateCarmichael(_prime1, _prime2);
+    _fastExp = tlpHelper.modExp(_base2, t, _carmichael);
+
+    BigInt primeProduct = tlpHelper.comupteProductOfPrime(_prime1, _prime2);
+    _fastPower = tlpHelper.modExp(baseg, _fastExp, primeProduct);
+    return (_fastPower, primeProduct);
   }
 
   /// Clear the values of the prime numbers and carmichael function
   void dispose() {
-    carmichael = BigInt.zero;
+    _prime1 = BigInt.zero;
+    _prime2 = BigInt.zero;
+    _carmichael = BigInt.zero;
     _fastExp = BigInt.zero;
-    fastPower = BigInt.zero;
+    _fastPower = BigInt.zero;
   }
 }
